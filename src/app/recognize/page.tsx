@@ -6,7 +6,7 @@ import { FlickeringGrid } from "@/components/FlickeringGrid";
 import { AuroraText } from "@/components/AuroraText";
 import { models } from "@/config";
 import { useLoading } from "@/hooks/useLoading";
-import { cn, isMobileDevice } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import MyTooltip from "@/components/MyTooltip";
 import SparklesText from '@/components/SparklesText';
 
@@ -87,40 +87,40 @@ export default function Inbound() {
     input.click();
   }
   // 调用系统相机
-  const onOpenCamera = () => {
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-    }).then(stream => {
-      // 拿到照片文件
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      video.play();
-      document.body.appendChild(video);
-      // 拍照
-      video.onclick = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
-        // 将 base64 字符串转换为 Blob 对象
-        const base64 = canvas.toDataURL('image/jpeg');
-        const byteString = atob(base64.split(',')[1]);
-        const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
-        const ab = new ArrayBuffer(byteString.length);
-        const ia = new Uint8Array(ab);
-        for (let i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
-        }
-        const blob = new Blob([ab], { type: mimeString });
-        const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-        uploadImage(file);
-        // 停止视频流并移除视频元素
-        const tracks = stream.getTracks();
-        tracks.forEach(track => track.stop());
-        document.body.removeChild(video);
-      }
-    })
-  }
+  // const onOpenCamera = () => {
+  //   navigator.mediaDevices.getUserMedia({
+  //     video: true,
+  //   }).then(stream => {
+  //     // 拿到照片文件
+  //     const video = document.createElement('video');
+  //     video.srcObject = stream;
+  //     video.play();
+  //     document.body.appendChild(video);
+  //     // 拍照
+  //     video.onclick = () => {
+  //       const canvas = document.createElement('canvas');
+  //       canvas.width = video.videoWidth;
+  //       canvas.height = video.videoHeight;
+  //       canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //       // 将 base64 字符串转换为 Blob 对象
+  //       const base64 = canvas.toDataURL('image/jpeg');
+  //       const byteString = atob(base64.split(',')[1]);
+  //       const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
+  //       const ab = new ArrayBuffer(byteString.length);
+  //       const ia = new Uint8Array(ab);
+  //       for (let i = 0; i < byteString.length; i++) {
+  //         ia[i] = byteString.charCodeAt(i);
+  //       }
+  //       const blob = new Blob([ab], { type: mimeString });
+  //       const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+  //       uploadImage(file);
+  //       // 停止视频流并移除视频元素
+  //       const tracks = stream.getTracks();
+  //       tracks.forEach(track => track.stop());
+  //       document.body.removeChild(video);
+  //     }
+  //   })
+  // }
   const onReset = () => {
     setResult(null);
   }
@@ -165,8 +165,11 @@ export default function Inbound() {
         } />
       </CardHeader>
       <CardBody className='overflow-x-scroll'>
+        <div className="cursor-pointer" onClick={onSelectImage}>
+          <UploadComponent result={!!result} className="w-full" />
+        </div>
 
-        {
+        {/* {
           isMobileDevice() ? (
             <Dropdown backdrop="blur" offset={-120}>
               <DropdownTrigger>
@@ -188,7 +191,7 @@ export default function Inbound() {
               <UploadComponent result={!!result} className="w-full" />
             </div>
           )
-        }
+        } */}
         {result && (
           <div className="mt-4">
             <div className="flex items-end gap-2 justify-between">
