@@ -13,7 +13,7 @@ const prompt = `
   Please directly output in JSON format: include the product name (productName) and for each ingredient (ingredients), the name (name), introduction (description), and whether it is harmful to human health (isDangerous).
   If there is no product name, return "未知" for productName.
   Please only identify the ingredient list in the image (do not identify any irrelevant content). If there is no ingredient list in the image, return null(Directly return null without any other content.).
-  finally, productName, ingredients, isDangerous need to be in Chinese.
+  finally, productName, ingredients need to be in Chinese， isDangerous is a boolean value(true or false).
 `;
 
 // 接收一张图片 传入的是 formData 类型， file 字段为图片

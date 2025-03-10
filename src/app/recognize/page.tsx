@@ -203,9 +203,6 @@ export default function Inbound() {
             </div>
           </div>
         )}
-        {
-          result && <>{JSON.stringify(result, null, 2)}</>
-        }
       </CardBody>
     </>
   );
