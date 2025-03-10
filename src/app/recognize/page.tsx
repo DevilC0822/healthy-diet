@@ -58,11 +58,10 @@ export default function Inbound() {
       method: 'POST',
       body: formData
     }).then(res => res.json()).then(data => {
-      console.log(data);
       if (!data.success) {
         addToast({
           title: '识别失败',
-          description: data.message,
+          description: data.msg,
           color: 'danger',
         });
       }
@@ -77,50 +76,50 @@ export default function Inbound() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      console.log(file);
-      if (file) {
-        uploadImage(file);
+
+    // 将 input 添加到 DOM 中，防止在 iOS Safari 中被过早回收
+    input.style.position = 'absolute';
+    input.style.visibility = 'hidden';
+    input.style.pointerEvents = 'none';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+
+    // 添加多个事件监听
+    const handleFile = (e: Event) => {
+      try {
+        const target = e.target as HTMLInputElement;
+        const file = target.files?.[0];
+        console.log('Selected file:', file);
+        if (file) {
+          uploadImage(file);
+          // 重置input，确保同一文件可以重复选择
+          target.value = '';
+        }
+      } catch (error) {
+        console.error('处理文件时出错:', error);
+        addToast({
+          title: '选择图片失败',
+          description: '请重试或选择其他图片',
+          color: 'danger',
+        });
+      } finally {
+        // 从 DOM 中移除 input 元素
+        if (input.parentNode) {
+          input.parentNode.removeChild(input);
+        }
       }
-    }
-    input.click();
+    };
+
+    // 绑定多个相关事件，确保在各种浏览器中都能正确触发
+    input.addEventListener('change', handleFile, false);
+    input.addEventListener('input', handleFile, false);
+
+    // iOS Safari 特定处理
+    setTimeout(() => {
+      // 延迟触发点击，确保事件绑定已完成
+      input.click();
+    }, 100);
   }
-  // 调用系统相机
-  // const onOpenCamera = () => {
-  //   navigator.mediaDevices.getUserMedia({
-  //     video: true,
-  //   }).then(stream => {
-  //     // 拿到照片文件
-  //     const video = document.createElement('video');
-  //     video.srcObject = stream;
-  //     video.play();
-  //     document.body.appendChild(video);
-  //     // 拍照
-  //     video.onclick = () => {
-  //       const canvas = document.createElement('canvas');
-  //       canvas.width = video.videoWidth;
-  //       canvas.height = video.videoHeight;
-  //       canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
-  //       // 将 base64 字符串转换为 Blob 对象
-  //       const base64 = canvas.toDataURL('image/jpeg');
-  //       const byteString = atob(base64.split(',')[1]);
-  //       const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
-  //       const ab = new ArrayBuffer(byteString.length);
-  //       const ia = new Uint8Array(ab);
-  //       for (let i = 0; i < byteString.length; i++) {
-  //         ia[i] = byteString.charCodeAt(i);
-  //       }
-  //       const blob = new Blob([ab], { type: mimeString });
-  //       const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-  //       uploadImage(file);
-  //       // 停止视频流并移除视频元素
-  //       const tracks = stream.getTracks();
-  //       tracks.forEach(track => track.stop());
-  //       document.body.removeChild(video);
-  //     }
-  //   })
-  // }
   const onReset = () => {
     setResult(null);
   }
@@ -168,30 +167,6 @@ export default function Inbound() {
         <div className="cursor-pointer" onClick={onSelectImage}>
           <UploadComponent result={!!result} className="w-full" />
         </div>
-
-        {/* {
-          isMobileDevice() ? (
-            <Dropdown backdrop="blur" offset={-120}>
-              <DropdownTrigger>
-                <div className="cursor-pointer">
-                  <UploadComponent result={!!result} className="w-full" />
-                </div>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem key="select" onPress={onSelectImage}>
-                  从相册选择
-                </DropdownItem>
-                <DropdownItem key="camera" onPress={onOpenCamera}>
-                  拍照
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          ) : (
-            <div className="cursor-pointer" onClick={onSelectImage}>
-              <UploadComponent result={!!result} className="w-full" />
-            </div>
-          )
-        } */}
         {result && (
           <div className="mt-4">
             <div className="flex items-end gap-2 justify-between">

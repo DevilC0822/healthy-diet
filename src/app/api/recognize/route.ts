@@ -9,10 +9,11 @@ import { models } from '@/config/index';
 connectToDatabase();
 
 const prompt = `
-  你是一个专业的营养师，现在需要你识别图片中的配料表，并给出每一项配料的名称、简介(需要确认它是否会影响人体健康)。
-  请以 直接返回 JSON 格式输出: 包含 商品名称(productName)以及每个配料(ingredients)的名称(name)、简介(description)、是否危害人体健康(isDangerous)。
-  如果没有商品名称，productName 返回未知。
-  如果图片中没有配料表，请返回 null。
+  You are a professional nutritionist. Now, you need to identify the ingredient list in the image and provide the name and a brief introduction for each ingredient (confirming whether it affects human health).
+  Please directly output in JSON format: include the product name (productName) and for each ingredient (ingredients), the name (name), introduction (description), and whether it is harmful to human health (isDangerous).
+  If there is no product name, return "未知" for productName.
+  Please only identify the ingredient list in the image (do not identify any irrelevant content). If there is no ingredient list in the image, return null(Directly return null without any other content.).
+  finally, productName, ingredients, isDangerous need to be in Chinese.
 `;
 
 // 接收一张图片 传入的是 formData 类型， file 字段为图片
@@ -69,7 +70,10 @@ export async function POST(request: NextRequest) {
         },
       ],
     });
-    const response = completion.choices[0].message.content;
+    const response = completion.choices[0].message.content;   
+    if (response === 'null') {
+      return ErrorResponse('识别失败');
+    }
     if (!response) {
       return ErrorResponse('识别失败');
     }
@@ -78,6 +82,9 @@ export async function POST(request: NextRequest) {
       return ErrorResponse('识别失败');
     }
     const result = JSON.parse(json[1]);
+    if (result === 'null' || result === null) {
+      return ErrorResponse('图片中没有配料表');
+    }
     const ingredients = result.ingredients;
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
     for (const item of ingredients) {
@@ -88,6 +95,7 @@ export async function POST(request: NextRequest) {
           description: item.description,
           updatedAt: currentTime,
           inSourceModel: model,
+          count: ingredient.count + 1,
         } });
         continue;
       }
