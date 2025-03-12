@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 项目简介
 
-## Getting Started
+一个借助 AI 能力，识别图片配料表的 Web 全栈应用。
 
-First, run the development server:
+## 技术栈
 
+- [Next.js](https://nextjs.org/)
+- [React](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Heroui](https://heroui.com/)
+- [MongoDB](https://www.mongodb.com/)
+
+## 功能
+
+- 调用各个 AI 模型，识别图片配料表
+- 移动端适配
+- 暗黑和亮色主题
+- 使用 RSA 进行数据加密
+- 使用 JWT 进行用户认证
+- 使用 MongoDB 存储数据
+- 数据可视化(规划中...)
+- i18n 国际化(规划中...)
+
+## 配置
+
+### 创建 .env.local 文件
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 配置环境变量
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# MongoDB 连接字符串
+MONGODB_URI=
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# AI 服务 API key
+GROK_KEY=
+SILICONFLOW_KEY=
+GEMINI_KEY=
 
-## Learn More
+# JWT 密钥
+JWT_SECRET=
 
-To learn more about Next.js, take a look at the following resources:
+# RSA 密钥对(使用 base64 编码)
+RSA_PRIVATE_KEY=
+RSA_PUBLIC_KEY=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 运行
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+npm run dev
+```
 
-## Deploy on Vercel
+## 部署
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+npm run start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
