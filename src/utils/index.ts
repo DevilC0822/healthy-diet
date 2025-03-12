@@ -1,17 +1,18 @@
 import { NextResponse } from 'next/server';
+import { SignJWT } from 'jose';
 
 type ResponseOptions = {
   code?: number;
   success?: boolean;
-  msg?: string;
+  message?: string;
 }
 
-export function SuccessResponse(data: unknown, { code = 200, success = true, msg = 'success' }: ResponseOptions = {}) {
+export function SuccessResponse(data: unknown, { code = 200, success = true, message = 'success' }: ResponseOptions = {}) {
   return NextResponse.json({
     code,
     success,
     data,
-    msg,
+    message,
   });
 }
 
@@ -21,19 +22,19 @@ type ErrorResponseOptions = {
   data?: null;
 }
 
-export function ErrorResponse(msg: string, { code = 500, success = false, data = null }: ErrorResponseOptions = {}) {
+export function ErrorResponse(message: string, { code = 200, success = false, data = null }: ErrorResponseOptions = {}) {
   return NextResponse.json({
     code,
     success,
     data,
-    msg,
+    message,
   });
 }
 
 // type ExecutionResult = {
 //   success: boolean;
 //   data: object | null;
-//   msg?: string;
+//   message?: string;
 //   code?: number;
 // }
 
@@ -45,4 +46,22 @@ export async function Execution(fn: () => Promise<NextResponse>): Promise<NextRe
     console.log(error);
     return ErrorResponse(error instanceof Error ? error.message : '服务器错误');
   }
+}
+
+export function myFetch(url: string, options: RequestInit = {}) {
+  const token = window.localStorage.getItem('diet-token');
+  if (token) {
+    options.headers = {
+      'Authorization': `Bearer ${token}`,
+      ...options.headers,
+    }
+  }
+  return fetch(url, options);
+}
+
+export async function signToken({ username, role }: { username: string, role: string }) {
+  return await new SignJWT({ username, role })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('30d')
+    .sign(new TextEncoder().encode(process.env.JWT_SECRET as string));
 }

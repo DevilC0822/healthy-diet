@@ -8,6 +8,13 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}"
   ],
+  safelist: [
+    'line-clamp-1',
+    'line-clamp-2',
+    'line-clamp-3',
+    'line-clamp-4',
+    'line-clamp-5',
+  ],
   theme: {
     extend: {
       colors: {
@@ -18,6 +25,9 @@ export default {
         "color-3": "hsl(var(--color-3))",
         "color-4": "hsl(var(--color-4))",
         "color-5": "hsl(var(--color-5))",
+      },
+      animation: {
+        shine: "shine var(--duration) infinite linear",
       },
       keyframes: {
         "aurora-border": {
@@ -45,6 +55,17 @@ export default {
           "0%, 100%": { bottom: "0", right: "0" },
           "50%": { bottom: "25%", right: "40%" },
           "90%": { bottom: "50%", right: "25%" },
+        },
+        shine: {
+          "0%": {
+            "background-position": "0% 0%",
+          },
+          "50%": {
+            "background-position": "100% 100%",
+          },
+          to: {
+            "background-position": "0% 0%",
+          },
         },
       },
     },

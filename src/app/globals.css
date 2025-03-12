@@ -35,3 +35,8 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+
+// toast z-index 
+div[role="region"] {
+  z-index: 9999 !important;
+}

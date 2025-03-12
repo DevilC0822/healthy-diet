@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { MenuConfig } from "@/config/menu";
+import { menus } from "@/config/menu";
 
 export default function Home() {
-  redirect(MenuConfig[0].key);
+  redirect(menus[0].key);
 }

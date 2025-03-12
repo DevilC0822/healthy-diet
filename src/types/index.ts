@@ -17,3 +17,20 @@ export type Ingredient = {
 }
 
 export type IngredientList = Ingredient[];
+
+export type User = {
+  id: string;
+  username: string;
+  role: 'admin' | 'onlyReadAdmin' | 'user';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type UserList = User[];
+
+export type Menu = {
+  title: string;
+  key: string;
+  icon: string;
+  permission: string[];
+}

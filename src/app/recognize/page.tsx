@@ -9,6 +9,7 @@ import { useLoading } from "@/hooks/useLoading";
 import { cn } from "@/lib/utils";
 import MyTooltip from "@/components/MyTooltip";
 import SparklesText from '@/components/SparklesText';
+import { isMobileDevice } from "@/lib/utils";
 
 const modelNameAtom = atom(Object.keys(models)[0]);
 const resultAtom = atom<{
@@ -48,6 +49,7 @@ export default function Inbound() {
   const [modelName, setModelName] = useAtom(modelNameAtom);
   const [result, setResult] = useAtom(resultAtom);
   const { startLoading, stopLoading } = useLoading();
+  console.log(isMobileDevice());
 
   const uploadImage = (file: File) => {
     startLoading();
@@ -61,7 +63,7 @@ export default function Inbound() {
       if (!data.success) {
         addToast({
           title: '识别失败',
-          description: data.msg,
+          description: data.message,
           color: 'danger',
         });
       }
@@ -111,14 +113,12 @@ export default function Inbound() {
     };
 
     // 绑定多个相关事件，确保在各种浏览器中都能正确触发
-    input.addEventListener('change', handleFile, false);
-    input.addEventListener('input', handleFile, false);
-
-    // iOS Safari 特定处理
-    setTimeout(() => {
-      // 延迟触发点击，确保事件绑定已完成
-      input.click();
-    }, 100);
+    if (isMobileDevice()) {
+      input.addEventListener('input', handleFile, false);
+    } else {
+      input.addEventListener('change', handleFile, false);
+    }
+    input.click();
   }
   const onReset = () => {
     setResult(null);
@@ -189,12 +189,15 @@ export default function Inbound() {
                     max-xl:w-[calc(33.333333%-0.5rem)]
                     max-lg:w-[calc(50%-0.5rem)]
                     max-sm:w-full
-                    h-[118px]
+                    min-h-[98px]
                   `}
                   title={<MyTooltip content={ingredient.name}>
                     <span className="text-lg line-clamp-1 min-h-[20px]">{ingredient.name}</span>
                   </MyTooltip>}
-                  description={<MyTooltip content={ingredient.description} textEllipsis lineClamp={3}>
+                  description={<MyTooltip
+                    content={ingredient.description}
+                    textEllipsis
+                    lineClamp={2}>
                     {ingredient.description}
                   </MyTooltip>}
                   color={ingredient.isDangerous ? 'danger' : 'secondary'}

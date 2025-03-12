@@ -3,14 +3,17 @@
 import React, { type SVGProps, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Button, Spacer, useDisclosure, Tooltip, Card } from "@heroui/react";
+import { Button, Spacer, useDisclosure, Tooltip, Card, addToast, Modal, ModalContent } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@heroui/react";
 import SidebarDrawer from "./SidebarDrawer";
 import { useTheme } from "next-themes";
 import { useLoading } from '@/hooks/useLoading';
-import { MenuConfig } from "@/config/menu";
+import { isLoginAtom, dietTokenAtom, userInfoAtom } from "@/store";
+import { useAtom } from "jotai";
+import Login from "./Login";
+
 
 const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
 
@@ -56,8 +59,13 @@ export default function Layout({ children }: LayoutProps) {
   const { LoadingComponent } = useLoading({ fullScreen: true });
   const { theme, setTheme } = useTheme();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen: isLoginOpen, onOpen: onLoginOpen, onClose: onLoginClose } = useDisclosure();
   const [isCollapsed, setIsCollapsed] = React.useState(false);
-
+  const [isLogin] = useAtom(isLoginAtom);
+  const [, setDietToken] = useAtom(dietTokenAtom);
+  const [userInfo] = useAtom(userInfoAtom);
+  const [mounted, setMounted] = useState(false);
+  
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const onToggle = React.useCallback(() => {
@@ -65,11 +73,8 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   const onOpenDrawer = () => {
-    // setIsCollapsed(false);
     onOpen();
   };
-
-  const [mounted, setMounted] = useState(false);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -77,6 +82,24 @@ export default function Layout({ children }: LayoutProps) {
     localStorage.setItem('theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
+
+  const onLogout = () => {
+    setDietToken('');
+    addToast({
+      title: '退出登录',
+      description: '您已成功退出登录',
+      color: 'success',
+    });
+  }
+
+  const onLoginSuccess = (token: string) => {
+    setDietToken(token);
+    addToast({
+      title: '登录成功',
+      description: '您已成功登录',
+      color: 'success',
+    });
+  }
 
   useEffect(() => {
     setMounted(true);
@@ -123,7 +146,7 @@ export default function Layout({ children }: LayoutProps) {
             </span>
             <div className={cn("flex-end flex", { hidden: isCollapsed })}>
               <Icon
-                className="cursor-pointer dark:text-primary-foreground/60 [&>g]:stroke-[1px]"
+                className="cursor-pointer dark:text-primary-foreground/60 [&>g]:stroke-[1px] max-md:hidden"
                 icon="solar:round-alt-arrow-left-line-duotone"
                 width={24}
                 onClick={onToggle}
@@ -139,7 +162,7 @@ export default function Layout({ children }: LayoutProps) {
               base: "px-3 rounded-large data-[selected=true]:!bg-foreground",
               title: "group-data-[selected=true]:text-default-50",
             }}
-            items={MenuConfig}
+            items={userInfo?.menu ?? []}
             onSelect={(key) => {
               router.push(key as string);
             }}
@@ -168,7 +191,7 @@ export default function Layout({ children }: LayoutProps) {
                 />
               </Button>
             )}
-            <Tooltip content="Mode" isDisabled={!isCollapsed} placement="right">
+            <Tooltip content={isLogin ? 'Log Out' : 'Login'} isDisabled={!isCollapsed} placement="right">
               <Button
                 fullWidth
                 className={cn(
@@ -178,27 +201,58 @@ export default function Layout({ children }: LayoutProps) {
                   },
                 )}
                 isIconOnly={isCollapsed}
-                startContent={
-                  isCollapsed ? null : (
-                    <Icon
-                      className="flex-none text-default-600"
-                      icon={theme === "dark" ? "solar:sun-line-duotone" : "solar:moon-line-duotone"}
-                      width={24}
-                    />
-                  )
-                }
+                variant="light"
+                onPress={isLogin ? onLogout : onLoginOpen}
+              >
+                <Icon
+                  className="flex-none text-default-600 dark:text-default-400"
+                  icon={isLogin ? "solar:ghost-smile-broken" : "solar:user-circle-broken"}
+                  width={24}
+                />
+                <span className={cn({ hidden: isCollapsed })}>{isLogin ? 'Log Out' : 'Login'}</span>
+              </Button>
+            </Tooltip>
+            {/* github */}
+            <Tooltip content="GitHub" isDisabled={!isCollapsed} placement="right">
+              <Button
+                fullWidth
+                className={cn(
+                  "justify-start truncate text-default-600 data-[hover=true]:text-foreground",
+                  {
+                    "justify-center": isCollapsed,
+                  },
+                )}
+                isIconOnly={isCollapsed}
+                variant="light"
+                onPress={() => window.open('https://github.com/DevilC0822', '_blank')}
+              >
+                <Icon
+                  className="flex-none text-default-600 dark:text-default-400"
+                  icon={theme === "dark" ? "skill-icons:github-light" : "skill-icons:github-dark"}
+                  width={24}
+                />
+                <span className={cn({ hidden: isCollapsed })}>GitHub</span>
+              </Button>
+            </Tooltip>
+            <Tooltip content={theme === "dark" ? "Light" : "Dark"} isDisabled={!isCollapsed} placement="right">
+              <Button
+                fullWidth
+                className={cn(
+                  "justify-start truncate text-default-600 data-[hover=true]:text-foreground",
+                  {
+                    "justify-center": isCollapsed,
+                  },
+                )}
+                isIconOnly={isCollapsed}
                 variant="light"
                 onPress={toggleTheme}
               >
-                {isCollapsed ? (
-                  <Icon
-                    className="text-default-500"
-                    icon={theme === "dark" ? "solar:sun-line-duotone" : "solar:moon-line-duotone"}
-                    width={24}
-                  />
-                ) : (
-                  theme === "dark" ? "Light" : "Dark"
-                )}
+                <Icon
+                  className="text-default-500"
+                  icon={theme === "dark" ? "solar:sun-line-duotone" : "solar:moon-line-duotone"}
+                  width={24}
+                />
+                <span className={cn({ hidden: isCollapsed })}>{theme === "dark" ? "Light" : "Dark"}</span>
               </Button>
             </Tooltip>
           </div>
@@ -230,6 +284,18 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         )}
       </main>
+
+      <Modal
+        isOpen={isLoginOpen}
+        onOpenChange={onLoginOpen}
+        backdrop="blur"
+        hideCloseButton
+        isDismissable={false}
+      >
+        <ModalContent>
+          <Login onLoginSuccess={onLoginSuccess} onClose={onLoginClose} />
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

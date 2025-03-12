@@ -96,7 +96,7 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
   useEffect(() => {
     const generateStar = (): Sparkle => {
       const starX = `${Math.random() * 100}%`;
-      const starY = `${Math.random() * 100}%`;
+      const starY = `${Math.random() * 80}%`;
       const color = Math.random() > 0.5 ? colors.first : colors.second;
       const delay = Math.random() * 2;
       const scale = Math.random() * 1 + 0.3;

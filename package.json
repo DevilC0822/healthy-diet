@@ -13,6 +13,7 @@
     "@iconify/react": "^5.2.0",
     "dayjs": "^1.11.13",
     "framer-motion": "^12.4.7",
+    "jose": "^6.0.8",
     "jotai": "^2.12.1",
     "mongoose": "^8.12.1",
     "motion": "^12.4.10",

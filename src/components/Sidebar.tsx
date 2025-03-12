@@ -7,7 +7,7 @@ import {
   type ListboxSectionProps,
   type Selection,
 } from "@heroui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { Listbox, Tooltip, ListboxItem, ListboxSection } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { cn } from "@heroui/react";
@@ -58,6 +58,10 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
     const pathname = usePathname();
     const router = useRouter();
     const [selected, setSelected] = React.useState<React.Key>(pathname.split("/")?.[1] || "");
+
+    useEffect(() => {
+      setSelected(pathname.split("/")?.[1] || "");
+    }, [pathname]);
     
     const sectionClasses = {
       ...sectionClassesProp,
