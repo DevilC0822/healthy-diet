@@ -291,6 +291,7 @@ export default function Layout({ children }: LayoutProps) {
         backdrop="blur"
         hideCloseButton
         isDismissable={false}
+        placement="center"
       >
         <ModalContent>
           <Login onLoginSuccess={onLoginSuccess} onClose={onLoginClose} />

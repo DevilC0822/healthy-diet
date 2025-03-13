@@ -130,7 +130,7 @@ export default function Inbound() {
             <p className="text-xl font-bold tracking-tighter flex items-center">
               <span>模型：</span><AuroraText>{models[modelName].name}</AuroraText>
             </p>
-            <Dropdown placement="right" backdrop="blur">
+            <Dropdown trigger="press" placement="bottom" backdrop="blur">
               <DropdownTrigger>
                 <Chip
                   classNames={{
@@ -150,6 +150,7 @@ export default function Inbound() {
                   <DropdownItem
                     key={key}
                     onPress={() => setModelName(key)}
+                    textValue={models[key].name}
                   >
                     {models[key].name}
                     {models[key].modelCompany && <Chip variant="flat" color="secondary" className="ml-2">{models[key].modelCompany}</Chip>}
