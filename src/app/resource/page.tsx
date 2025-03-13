@@ -53,7 +53,6 @@ export default function Resource() {
   const { startLoading, stopLoading } = useLoading();
 
   const onSearch = (params?: { [key: string]: string | number }) => {
-    console.log(filter);
     startLoading();
     fetch(`/api/ingredients?name=${filter.name}&inType=${filter.inType}&inSourceModel=${filter.inSourceModel}&current=${params?.current ?? pageInfo.current}&size=${params?.size ?? pageInfo.size}`)
       .then(res => res.json())

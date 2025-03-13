@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
         delete query[key];
       }
     });
-    console.log(query);
     const ingredients = await Ingredients.find(query).skip((current - 1) * size).limit(size);
     const total = await Ingredients.countDocuments(query);
     return SuccessResponse({

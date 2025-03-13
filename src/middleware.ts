@@ -41,8 +41,7 @@ export default async function jwtMiddleware(request: NextRequest) {
       return ErrorResponse('无权限');
     }
     return NextResponse.next();
-  } catch (error) {
-    console.log(error);
+  } catch {
     return ErrorResponse('无效的 Token');
   }
 }

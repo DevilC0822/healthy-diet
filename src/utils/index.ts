@@ -31,13 +31,6 @@ export function ErrorResponse(message: string, { code = 200, success = false, da
   });
 }
 
-// type ExecutionResult = {
-//   success: boolean;
-//   data: object | null;
-//   message?: string;
-//   code?: number;
-// }
-
 // 执行函数并返回结果
 export async function Execution(fn: () => Promise<NextResponse>): Promise<NextResponse> {
   try {

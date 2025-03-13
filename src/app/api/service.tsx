@@ -15,10 +15,16 @@ export const geminiService = new OpenAI({
   apiKey: process.env.GEMINI_KEY,
 });
 
+export const volcengineService = new OpenAI({
+  baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
+  apiKey: process.env.VOLCENGINE_KEY,
+});
+
 const ServiceMap: { [key: string]: OpenAI } = {
   grok: grokService,
   siliconflow: siliconflowService,
   gemini: geminiService,
+  volcengine: volcengineService,
 }
 
 export const getService = (service: string) => {

@@ -124,8 +124,6 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
     return true;
   }
   const vaildConfirmPassword = (value: string, oldPassword?: string) => {
-    console.log(value, oldPassword || password);
-    
     if (!value) {
       return false;
     }
@@ -185,7 +183,6 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }).then(res => res.json()).then(data => {
-      console.log(data);
       if (!data.success) {
         if (errorMap[data.message]?.field === 'username') {
           setUsernameError({
@@ -230,7 +227,6 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }).then(res => res.json()).then(data => {
-      console.log(data);
       if (!data.success) {
         if (errorMap[data.message]?.field === 'username') {
           setUsernameError({

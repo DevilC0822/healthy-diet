@@ -49,7 +49,6 @@ export default function Inbound() {
   const [modelName, setModelName] = useAtom(modelNameAtom);
   const [result, setResult] = useAtom(resultAtom);
   const { startLoading, stopLoading } = useLoading();
-  console.log(isMobileDevice());
 
   const uploadImage = (file: File) => {
     startLoading();
@@ -91,14 +90,12 @@ export default function Inbound() {
       try {
         const target = e.target as HTMLInputElement;
         const file = target.files?.[0];
-        console.log('Selected file:', file);
         if (file) {
           uploadImage(file);
           // 重置input，确保同一文件可以重复选择
           target.value = '';
         }
-      } catch (error) {
-        console.error('处理文件时出错:', error);
+      } catch {
         addToast({
           title: '选择图片失败',
           description: '请重试或选择其他图片',
@@ -145,10 +142,18 @@ export default function Inbound() {
                   更换模型
                 </Chip>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Link Actions">
+              <DropdownMenu
+                disabledKeys={Object.keys(models).filter(key => models[key].disabled).map(key => key as string)}
+                aria-label="Link Actions"
+              >
                 {Object.keys(models).map(key => (
-                  <DropdownItem key={key} onPress={() => setModelName(key)}>
+                  <DropdownItem
+                    key={key}
+                    onPress={() => setModelName(key)}
+                  >
                     {models[key].name}
+                    {models[key].modelCompany && <Chip variant="flat" color="secondary" className="ml-2">{models[key].modelCompany}</Chip>}
+                    {models[key].disabled && <span className="text-sm text-gray-500 ml-2">({models[key]?.disabledReason ?? ''})</span>}
                   </DropdownItem>
                 ))}
               </DropdownMenu>

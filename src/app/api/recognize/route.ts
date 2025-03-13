@@ -6,27 +6,69 @@ import { getService } from '@/app/api/service';
 import dayjs from 'dayjs';
 import { models } from '@/config/index';
 
+const isJson = (str: string | null) => {
+  if (!str) {
+    return false;
+  }
+  try {
+    JSON.parse(str);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 connectToDatabase();
 
-const prompt = `
+const prompt_for_CN = `
   You are a professional nutritionist. Now, you need to identify the ingredient list in the image and provide the name and a brief introduction for each ingredient (confirming whether it affects human health).
-  Please directly output in JSON format: include the product name (productName) and for each ingredient (ingredients), the name (name), introduction (description), and whether it is harmful to human health (isDangerous).
-  If there is no product name, return "未知" for productName.
-  Please only identify the ingredient list in the image (do not identify any irrelevant content). If there is no ingredient list in the image, return null(Directly return null without any other content.).
-  finally, productName, ingredients need to be in Chinese， isDangerous is a boolean value(true or false).
+  Please complete the task according to the following steps:
+  1. Identify the ingredient list in the image.
+  2. For each identified ingredient, provide its name.
+  3. Provide a brief introduction for each ingredient, explaining its impact on human health.
+  4. Based on the introduction, determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
+  5. Please return in Chinese using the string type.
+  please using this JSON schema: 
+  {
+    isIncludeIngredientList: boolean,
+    productName: string | 'unknown',
+    ingredients: {
+      name: string,
+      description: string,
+      isDangerous: boolean,
+    }[],
+  }
+`;
+
+const prompt_for_EN = `
+  You are a professional nutritionist. Now, you need to identify the ingredient list in the image and provide the name and a brief introduction for each ingredient (confirming whether it affects human health).
+  Please complete the task according to the following steps:
+  1. Identify the ingredient list in the image.
+  2. For each identified ingredient, provide its name.
+  3. Provide a brief introduction for each ingredient, explaining its impact on human health.
+  4. Based on the introduction, determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
+  please using this JSON schema: 
+  {
+    isIncludeIngredientList: boolean,
+    productName: string | 'unknown',
+    ingredients: {
+      name: string,
+      description: string,
+      isDangerous: boolean,
+    }[],
+  }
 `;
 
 // 接收一张图片 传入的是 formData 类型， file 字段为图片
 export async function POST(request: NextRequest) {
   return Execution(async () => {
     const contentType = request.headers.get('content-type') || '';
+    const lang = request.headers.get('lang') || 'CN';
     const multipartFormDataRegex = /^multipart\/form-data;.*boundary.*$/;
     if (!multipartFormDataRegex.test(contentType)) {
       return ErrorResponse('请求格式错误：需要 multipart/form-data');
     }
     const formData = await request.formData();
-    console.log(formData);
-
     const file = formData.get('file') as File;
     const model = formData.get('model') as string;
     const service = models[model].service;
@@ -47,8 +89,7 @@ export async function POST(request: NextRequest) {
     }
     const buffer = await file.arrayBuffer();
     const base64_image = Buffer.from(buffer).toString('base64');
-    console.log(base64_image?.length);
-    
+
     const completion = await getService(service).chat.completions.create({
       model,
       messages: [
@@ -58,32 +99,26 @@ export async function POST(request: NextRequest) {
             {
               type: "image_url",
               image_url: {
-                url: `data:image/jpeg;base64,${base64_image}`,
+                url: `data:${file.type};base64,${base64_image}`,
                 detail: "high",
               },
             },
             {
               type: "text",
-              text: prompt,
+              text: lang === 'CN' ? prompt_for_CN : prompt_for_EN,
             },
           ],
         },
       ],
+      response_format: { type: "json_object" },
     });
-    const response = completion.choices[0].message.content;   
-    if (response === 'null') {
-      return ErrorResponse('识别失败');
+    const response = completion.choices[0].message.content;
+    if (!isJson(response)) {
+      return ErrorResponse('返回格式错误，请重新上传');
     }
-    if (!response) {
-      return ErrorResponse('识别失败');
-    }
-    const json = response.match(/```json\n([\s\S]*?)\n```/);
-    if (!json) {
-      return ErrorResponse('识别失败');
-    }
-    const result = JSON.parse(json[1]);
-    if (result === 'null' || result === null) {
-      return ErrorResponse('图片中没有配料表');
+    const result = JSON.parse(response!);
+    if (!result.isIncludeIngredientList) {
+      return ErrorResponse('图片中不包含配料表，如果确定图片中包含配料表，请切换模型重新上传');
     }
     const ingredients = result.ingredients;
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
