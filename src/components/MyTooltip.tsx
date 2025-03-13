@@ -46,7 +46,7 @@ const MyTooltip = (props: TooltipProps) => {
 
   useEffect(() => {
     // 初始检测
-    setTimeout(checkTextTruncation, 0);
+    setTimeout(checkTextTruncation, 100);
 
     // 使用ResizeObserver监听元素尺寸变化
     const resizeObserver = new ResizeObserver(() => {

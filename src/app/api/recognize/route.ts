@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const model = formData.get('model') as string;
+    const modelLabel = formData.get('modelLabel') as string;
     const service = models[model].service;
     if (!file) {
       return ErrorResponse('文件不能为空');
@@ -129,7 +130,7 @@ export async function POST(request: NextRequest) {
         await Ingredients.updateOne({ _id: ingredient._id }, { $set: { 
           description: item.description,
           updatedAt: currentTime,
-          inSourceModel: model,
+          inSourceModel: modelLabel,
           count: ingredient.count + 1,
         } });
         continue;
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest) {
         description: item.description,
         count: 1,
         inType: '1',
-        inSourceModel: model,
+        inSourceModel: modelLabel,
         createdAt: currentTime,
         updatedAt: currentTime,
       });

@@ -224,7 +224,7 @@ export default function Layout({ children }: LayoutProps) {
                 )}
                 isIconOnly={isCollapsed}
                 variant="light"
-                onPress={() => window.open('https://github.com/DevilC0822', '_blank')}
+                onPress={() => window.open('https://github.com/DevilC0822/healthy-diet', '_blank')}
               >
                 <Icon
                   className="flex-none text-default-600 dark:text-default-400"
@@ -262,7 +262,7 @@ export default function Layout({ children }: LayoutProps) {
       <div className="hidden max-md:flex justify-between items-center bg-gradient-to-br from-indigo-500 to-pink-500 p-4 rounded-lg mb-6">
         <Icon icon="solar:widget-6-linear" width={24} onClick={onOpenDrawer} />
         {/* <span className="text-2xl font-bold">配料表</span> */}
-        <Icon icon="logos:github-icon" width={24} onClick={() => window.open('https://github.com/DevilC0822', '_blank')} />
+        <Icon icon="logos:github-icon" width={24} onClick={() => window.open('https://github.com/DevilC0822/healthy-diet', '_blank')} />
       </div>
 
       <main className="w-full h-auto overflow-y-auto">

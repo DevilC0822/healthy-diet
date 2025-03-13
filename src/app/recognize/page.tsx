@@ -55,6 +55,7 @@ export default function Inbound() {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('model', modelName);
+    formData.append('modelLabel', models[modelName].label);
     fetch('/api/recognize', {
       method: 'POST',
       body: formData
@@ -127,8 +128,8 @@ export default function Inbound() {
         <SparklesText text="配料识别" />
         <div className="w-full flex flex-col gap-2 items-start mt-2">
           <div className="flex items-center gap-2">
-            <p className="text-xl font-bold tracking-tighter flex items-center">
-              <span>模型：</span><AuroraText>{models[modelName].name}</AuroraText>
+            <p className="text-xl font-bold tracking-tighter flex items-center max-md:text-base">
+              <span className="max-md:text-sm">模型：</span><AuroraText>{models[modelName].label}</AuroraText>
             </p>
             <Dropdown trigger="press" placement="bottom" backdrop="blur">
               <DropdownTrigger>
@@ -150,9 +151,9 @@ export default function Inbound() {
                   <DropdownItem
                     key={key}
                     onPress={() => setModelName(key)}
-                    textValue={models[key].name}
+                    textValue={models[key].label}
                   >
-                    {models[key].name}
+                    {models[key].label}
                     {models[key].modelCompany && <Chip variant="flat" color="secondary" className="ml-2">{models[key].modelCompany}</Chip>}
                     {models[key].disabled && <span className="text-sm text-gray-500 ml-2">({models[key]?.disabledReason ?? ''})</span>}
                   </DropdownItem>
@@ -165,7 +166,7 @@ export default function Inbound() {
           </span>
         </div>
         {/* 上传说明 */}
-        <Alert color="secondary" title="上传说明" description={
+        <Alert color="primary" title="上传说明" description={
           `支持${models[modelName].limit.type.join('、')}格式，大小不超过${models[modelName].limit.size / 1024 / 1024}MB`
         } />
       </CardHeader>
@@ -176,7 +177,7 @@ export default function Inbound() {
         {result && (
           <div className="mt-4">
             <div className="flex items-end gap-2 justify-between">
-              <h1 className="text-4xl max-md:text-2xl font-bold tracking-tighter">
+              <h1 className="text-4xl max-md:text-xl font-bold tracking-tighter">
                 商品名称：<AuroraText>{result.productName}</AuroraText>
               </h1>
               <Button color="secondary" size="sm" onPress={onReset}>

@@ -8,9 +8,15 @@ export const menus: Menu[] = [
     permission: ['*'],
   },
   {
-    title: '配料识别',
+    title: '识配料',
     key: 'recognize',
     icon: 'solar:bill-list-outline',
+    permission: ['*'],
+  },
+  {
+    title: '模型库',
+    key: 'models',
+    icon: 'solar:box-minimalistic-broken',
     permission: ['*'],
   },
   {
