@@ -18,14 +18,14 @@ const tabKeyMap: { [key: string]: { startDate: string; endDate: string } } = {
     startDate: '2025-01-01',
     endDate: today,
   },
-  '近 6 个月': {
-    startDate: dayjs().subtract(6, 'month').format('YYYY-MM-DD'),
-    endDate: today,
-  },
-  '近 3 个月': {
-    startDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
-    endDate: today,
-  },
+  // '近 6 个月': {
+  //   startDate: dayjs().subtract(6, 'month').format('YYYY-MM-DD'),
+  //   endDate: today,
+  // },
+  // '近 3 个月': {
+  //   startDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
+  //   endDate: today,
+  // },
   '近 30 天': {
     startDate: dayjs().subtract(29, 'day').format('YYYY-MM-DD'),
     endDate: today,
@@ -194,7 +194,7 @@ export default function TokenUsages() {
           ))}
         </Tabs>
         <div className="mt-2 flex w-full items-center">
-          <div className="-my-3 flex w-full max-w-[800px] items-center gap-x-3 overflow-x-auto py-3">
+          <div className="-my-3 flex w-full max-w-[800px] max-md:max-w-full items-center gap-x-3 overflow-x-auto py-3">
             {typeTabs.map(({ key, value, label }) => (
               <button
                 key={key}
@@ -224,7 +224,7 @@ export default function TokenUsages() {
         </div>
       </CardHeader >
       <CardBody>
-        <div ref={chartRef} className='w-96 h-36' />
+        <div ref={chartRef} className='w-96 h-36 max-md:w-64' />
       </CardBody>
     </Card >
   );

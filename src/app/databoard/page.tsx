@@ -10,7 +10,7 @@ export default function Databoard() {
     <>
       <CardHeader className='flex flex-col gap-2 items-start'>
         <SparklesText text="数据看板" />
-        <div className='flex flex-wrap gap-2 mt-2'>
+        <div className='flex flex-wrap gap-2 mt-2 max-md:flex-col max-md:w-full'>
           <TokenUsages />
         </div>
       </CardHeader>
