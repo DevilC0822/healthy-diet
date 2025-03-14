@@ -2,6 +2,12 @@ import type { Menu } from '@/types';
 
 export const menus: Menu[] = [
   {
+    title: '数据看板',
+    key: 'databoard',
+    icon: 'solar:diagram-up-broken',
+    permission: ['*'],
+  },
+  {
     title: '配料库',
     key: 'resource',
     icon: 'solar:folder-line-duotone',
