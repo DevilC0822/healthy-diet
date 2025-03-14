@@ -10,19 +10,16 @@ export async function GET(request: NextRequest) {
   return Execution(async () => {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name') || '';
-    let inType: string | undefined = searchParams.get('inType') || '';
+    const inType = searchParams.get('inType') || '';
     const inSourceModel = searchParams.get('inSourceModel') || '';
     // const count = searchParams.get('count') || '';
-    if (inType === 'all') {
-      inType = undefined
-    }
     // const [minCount, maxCount] = count ? count.split('-').map(Number) : [0, 1000000];
     const current = Number(searchParams.get('current')) || 1;
     const size = Number(searchParams.get('size')) || 10;
     // name 为空时，查询所有
     const query: { [key: string]: unknown } = {
       name: name ? { $regex: name, $options: 'i' } : undefined,
-      inType,
+      inType: inType ? { $regex: inType, $options: 'i' } : undefined,
       inSourceModel: inSourceModel ? { $regex: inSourceModel, $options: 'i' } : undefined,
       // count: { $gte: minCount, $lte: maxCount }
     };
@@ -32,7 +29,7 @@ export async function GET(request: NextRequest) {
         delete query[key];
       }
     });
-    const ingredients = await Ingredients.find(query).skip((current - 1) * size).limit(size);
+    const ingredients = await Ingredients.find(query).sort({ updatedAt: -1 }).skip((current - 1) * size).limit(size);
     const total = await Ingredients.countDocuments(query);
     return SuccessResponse({
       records: ingredients,

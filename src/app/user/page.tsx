@@ -206,9 +206,9 @@ export default function User() {
         >
           <TableHeader>
             <TableColumn width={160} key="username">用户名</TableColumn>
-            <TableColumn width={300} key="role">角色</TableColumn>
-            <TableColumn width={120} key="createdAt">创建时间</TableColumn>
-            <TableColumn width={120} key="updatedAt">更新时间</TableColumn>
+            <TableColumn width={120} key="role">角色</TableColumn>
+            <TableColumn width={180} key="createdAt">创建时间</TableColumn>
+            <TableColumn width={180} key="updatedAt">更新时间</TableColumn>
             <TableColumn width={120} key="action">操作</TableColumn>
           </TableHeader>
           <TableBody>

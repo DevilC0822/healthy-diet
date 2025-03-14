@@ -34,3 +34,20 @@ export type Menu = {
   icon: string;
   permission: string[];
 }
+
+
+export type Usage = {
+  id: string;
+  productName: string;
+  model: string;
+  modelLabel: string;
+  usage: {
+    completion_tokens: number;
+    prompt_tokens: number;
+    total_tokens: number;
+  };
+  createBy: string;
+  createdAt: string;
+}
+
+export type UsageList = Usage[];

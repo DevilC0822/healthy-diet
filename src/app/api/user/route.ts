@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         delete query[key];
       }
     });
-    const users = await User.find(query).skip((current - 1) * size).limit(size);
+    const users = await User.find(query).sort({ createdAt: -1 }).skip((current - 1) * size).limit(size);
     const total = await User.countDocuments(query);
     return SuccessResponse({
       records: users,

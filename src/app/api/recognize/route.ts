@@ -1,4 +1,5 @@
 import Ingredients from '@/lib/db/models/ingredients';
+import Usage from '@/lib/db/models/usage';
 import { SuccessResponse, ErrorResponse, Execution } from '@/utils';
 import { NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
@@ -26,7 +27,7 @@ const prompt_for_CN = `
   1. Identify the ingredient list in the image.
   2. For each identified ingredient, provide its name.
   3. Provide a brief introduction for each ingredient, explaining its impact on human health.
-  4. Based on the introduction, determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
+  4. determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
   5. Please return in Chinese using the string type.
   please using this JSON schema: 
   {
@@ -46,7 +47,7 @@ const prompt_for_EN = `
   1. Identify the ingredient list in the image.
   2. For each identified ingredient, provide its name.
   3. Provide a brief introduction for each ingredient, explaining its impact on human health.
-  4. Based on the introduction, determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
+  4. determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
   please using this JSON schema: 
   {
     isIncludeIngredientList: boolean,
@@ -64,6 +65,8 @@ export async function POST(request: NextRequest) {
   return Execution(async () => {
     const contentType = request.headers.get('content-type') || '';
     const lang = request.headers.get('lang') || 'CN';
+    const createBy = request.headers.get('CreateBy') || '';
+    console.log(createBy);
     const multipartFormDataRegex = /^multipart\/form-data;.*boundary.*$/;
     if (!multipartFormDataRegex.test(contentType)) {
       return ErrorResponse('请求格式错误：需要 multipart/form-data');
@@ -121,8 +124,22 @@ export async function POST(request: NextRequest) {
     if (!result.isIncludeIngredientList) {
       return ErrorResponse('图片中不包含配料表，如果确定图片中包含配料表，请切换模型重新上传');
     }
-    const ingredients = result.ingredients;
+    console.log(result);
+    
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    await Usage.create({
+      createBy,
+      productName: result?.productName,
+      usage: completion?.usage ?? {
+        completion_tokens: 0,
+        prompt_tokens: 0,
+        total_tokens: 0,
+      },
+      model,
+      modelLabel,
+      createdAt: currentTime,
+    });
+    const ingredients = result?.ingredients ?? [];
     for (const item of ingredients) {
       // 判断是否存在
       const ingredient = await Ingredients.findOne({ name: item.name });

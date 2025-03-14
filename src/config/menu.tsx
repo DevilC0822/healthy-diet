@@ -10,7 +10,7 @@ export const menus: Menu[] = [
   {
     title: '识配料',
     key: 'recognize',
-    icon: 'solar:bill-list-outline',
+    icon: 'solar:calendar-search-broken',
     permission: ['*'],
   },
   {
@@ -18,6 +18,12 @@ export const menus: Menu[] = [
     key: 'models',
     icon: 'solar:box-minimalistic-broken',
     permission: ['*'],
+  },
+  {
+    title: '使用记录',
+    key: 'usage',
+    icon: 'solar:bill-list-outline',
+    permission: ['admin', 'onlyReadAdmin'],
   },
   {
     title: '用户管理',

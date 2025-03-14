@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import MyTooltip from "@/components/MyTooltip";
 import SparklesText from '@/components/SparklesText';
 import { isMobileDevice } from "@/lib/utils";
+import { userInfoAtom } from "@/store";
 
 const modelNameAtom = atom(Object.keys(models)[0]);
 const resultAtom = atom<{
@@ -49,6 +50,7 @@ export default function Inbound() {
   const [modelName, setModelName] = useAtom(modelNameAtom);
   const [result, setResult] = useAtom(resultAtom);
   const { startLoading, stopLoading } = useLoading();
+  const [userInfo] = useAtom(userInfoAtom);
 
   const uploadImage = (file: File) => {
     startLoading();
@@ -58,6 +60,9 @@ export default function Inbound() {
     formData.append('modelLabel', models[modelName].label);
     fetch('/api/recognize', {
       method: 'POST',
+      headers: {
+        'CreateBy': userInfo?.username ?? '',
+      },
       body: formData
     }).then(res => res.json()).then(data => {
       if (!data.success) {
