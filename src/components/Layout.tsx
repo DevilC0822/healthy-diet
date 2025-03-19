@@ -15,7 +15,7 @@ import { useAtom } from "jotai";
 import Login from "./Login";
 
 
-const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false })
+const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false });
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -90,7 +90,7 @@ export default function Layout({ children }: LayoutProps) {
       description: '您已成功退出登录',
       color: 'success',
     });
-  }
+  };
 
   const onLoginSuccess = (token: string) => {
     setDietToken(token);
@@ -99,7 +99,7 @@ export default function Layout({ children }: LayoutProps) {
       description: '您已成功登录',
       color: 'success',
     });
-  }
+  };
 
   useEffect(() => {
     setMounted(true);

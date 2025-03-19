@@ -2,11 +2,8 @@ import User from '@/lib/db/models/user';
 import { SuccessResponse, ErrorResponse, Execution } from '@/utils';
 import { NextRequest } from 'next/server';
 import dayjs from 'dayjs';
-import { connectToDatabase } from '@/lib/db';
 import { decryptRsaPassword, encryptRsaPassword } from '@/app/api/utils';
 import { signToken } from '@/utils';
-
-connectToDatabase();
 
 export async function GET(request: NextRequest) {
   return Execution(async () => {

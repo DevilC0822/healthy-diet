@@ -9,7 +9,7 @@ type UserInfo = {
   menu: Menu[];
 }
 
-const myStore = createStore()
+const myStore = createStore();
 
 const dietTokenAtom = atomWithStorage('diet-token', '', {
   getItem: (key) => {
@@ -44,7 +44,7 @@ const isLoginAtom = atom(async (get) => {
   try {
     const response = await fetch('/api/user/me', {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
       },
       method: 'GET',
     }).then(res => res.json());

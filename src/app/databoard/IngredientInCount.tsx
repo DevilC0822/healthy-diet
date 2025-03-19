@@ -51,11 +51,11 @@ const formatValue = (value: number) => {
 };
 
 const cache = new Map<string, {
-  usagesByDay: {
+  inCountByDay: {
     date: string;
-    usage: number;
+    count: number;
   }[];
-  usage: {
+  counts: {
     key: string;
     label: string;
     value: number;
@@ -65,7 +65,7 @@ const cache = new Map<string, {
 
 let chart: echarts.ECharts;
 
-export default function TokenUsages() {
+export default function IngredientInCount() {
   const chartRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState('全部');
   const [typeTabs, setTypeTabs] = useState([
@@ -76,14 +76,14 @@ export default function TokenUsages() {
       lineColor: '#737ace',
     },
     {
-      key: 'prompt',
-      label: '输入',
+      key: 'input',
+      label: '手动查询',
       value: 0,
       lineColor: '#f095a0',
     },
     {
-      key: 'completion',
-      label: '输出',
+      key: 'recognize',
+      label: '图片识别',
       value: 0,
       lineColor: '#00b7e4',
     },
@@ -91,29 +91,29 @@ export default function TokenUsages() {
   const [type, setType] = useState('total');
   const [chartData, setChartData] = useState<{
     date: string;
-    usage: number;
+    count: number;
   }[]>([]);
 
   const getChartData = async () => {
     const cacheKey = `${current}-${type}`;
     if (cache.has(cacheKey)) {
-      setChartData(cache.get(cacheKey)?.usagesByDay || []);
-      setTypeTabs(cache.get(cacheKey)?.usage || []);
+      setChartData(cache.get(cacheKey)?.inCountByDay || []);
+      setTypeTabs(cache.get(cacheKey)?.counts || []);
       return;
     }
     const startDate = tabKeyMap[current].startDate;
     const endDate = tabKeyMap[current].endDate;
-    const res = await fetch(`/api/databoard/token?startDate=${startDate}&endDate=${endDate}&type=${type}`);
+    const res = await fetch(`/api/databoard/in-count?startDate=${startDate}&endDate=${endDate}&type=${type}`);
     const resData = await res.json();
-    setChartData(resData.data.usagesByDay);
-    const usage = typeTabs.map(i => ({
+    setChartData(resData.data.inCountByDay);
+    const counts = typeTabs.map(i => ({
       ...i,
-      value: resData.data.usage?.[i.key] ?? 0,
+      value: resData.data.counts?.[i.key] ?? 0,
     }));
-    setTypeTabs(usage);
+    setTypeTabs(counts);
     cache.set(cacheKey, {
-      usagesByDay: resData.data.usagesByDay,
-      usage,
+      inCountByDay: resData.data.inCountByDay,
+      counts,
     });
   };
 
@@ -147,7 +147,7 @@ export default function TokenUsages() {
       },
       series: [
         {
-          data: chartData.map(i => i.usage),
+          data: chartData.map(i => i.count),
           type: 'line',
           symbol: 'none',
           smooth: true,
@@ -187,7 +187,7 @@ export default function TokenUsages() {
   return (
     <Card>
       <CardHeader className='flex flex-col justify-between items-startDate'>
-        <p className='text-2xl font-bold'>Token 用量</p>
+        <p className='text-2xl font-bold'>配料入库量</p>
         <Tabs
           className='mt-2'
           size="sm"

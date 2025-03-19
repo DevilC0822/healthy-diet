@@ -87,7 +87,7 @@ export default function User() {
 
   const onReset = () => {
     setFilter({ ...filter, username: '', role: '' });
-  }
+  };
 
   const onEdit = () => {
     startLoading();
@@ -109,7 +109,7 @@ export default function User() {
       }).finally(() => {
         stopLoading();
       });
-  }
+  };
 
   const onDelete = (user: TUser, closeFn: () => void) => {
     startLoading();
@@ -131,7 +131,7 @@ export default function User() {
       }).finally(() => {
         stopLoading();
       });
-  }
+  };
 
   useEffect(() => {
     onSearch({ current: pageInfo.current, size: pageInfo.size });

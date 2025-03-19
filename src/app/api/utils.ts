@@ -19,7 +19,7 @@ export const encryptRsaPassword = (password: string) => {
       key: publicKey,
       padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
     },
-    Buffer.from(password, 'utf-8')
+    Buffer.from(password, 'utf-8'),
   );
 
   // 返回 base64 编码的加密数据
@@ -45,7 +45,7 @@ export const decryptRsaPassword = (encryptedPassword: string) => {
       key: privateKey,
       padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
     },
-    Buffer.from(encryptedPassword, 'base64')
+    Buffer.from(encryptedPassword, 'base64'),
   );
 
   // 返回解密后的明文

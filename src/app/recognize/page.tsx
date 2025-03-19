@@ -11,6 +11,7 @@ import MyTooltip from "@/components/MyTooltip";
 import SparklesText from '@/components/SparklesText';
 import { isMobileDevice } from "@/lib/utils";
 import { userInfoAtom } from "@/store";
+import PulsatingButton from "@/components/PulsatingButton";
 
 const modelNameAtom = atom(Object.keys(models)[0]);
 const resultAtom = atom<{
@@ -19,6 +20,7 @@ const resultAtom = atom<{
     name: string;
     description: string;
     isDangerous: boolean;
+    type: string;
   }[];
 } | null>(null);
 
@@ -28,7 +30,7 @@ const UploadComponent = ({ result = false, className }: { result?: boolean, clas
       cn(
         'relative h-80 w-full overflow-hidden rounded-lg border bg-background flex justify-center items-center',
         result && 'hidden',
-        className
+        className,
       )
     }>
       <FlickeringGrid
@@ -39,12 +41,17 @@ const UploadComponent = ({ result = false, className }: { result?: boolean, clas
         maxOpacity={0.5}
         flickerChance={0.1}
       />
-      <h1 className="text-4xl font-bold tracking-tighter">
+      {/* <h1 className="text-4xl font-bold tracking-tighter">
         上传 <AuroraText>配料图片</AuroraText>
-      </h1>
+      </h1> */}
+      <PulsatingButton
+        className="text-2xl font-bold"
+      >
+        上传
+      </PulsatingButton>
     </div>
-  )
-}
+  );
+};
 
 export default function Inbound() {
   const [modelName, setModelName] = useAtom(modelNameAtom);
@@ -63,7 +70,7 @@ export default function Inbound() {
       headers: {
         'CreateBy': userInfo?.username ?? '',
       },
-      body: formData
+      body: formData,
     }).then(res => res.json()).then(data => {
       if (!data.success) {
         addToast({
@@ -75,8 +82,8 @@ export default function Inbound() {
       setResult(data.data ?? null);
     }).finally(() => {
       stopLoading();
-    })
-  }
+    });
+  };
 
   const onSelectImage = () => {
     // 创建一个input标签
@@ -122,10 +129,10 @@ export default function Inbound() {
       input.addEventListener('change', handleFile, false);
     }
     input.click();
-  }
+  };
   const onReset = () => {
     setResult(null);
-  }
+  };
 
   return (
     <>
@@ -203,9 +210,12 @@ export default function Inbound() {
                     max-sm:w-full
                     min-h-[98px]
                   `}
-                  title={<MyTooltip content={ingredient.name}>
-                    <span className="text-lg line-clamp-1 min-h-[20px]">{ingredient.name}</span>
-                  </MyTooltip>}
+                  title={<div className="flex items-center">
+                    <MyTooltip content={ingredient.name}>
+                      <span className="text-lg line-clamp-1 min-h-[20px]">{ingredient.name}</span>
+                    </MyTooltip>
+                    <Chip size="sm" variant="flat" color="primary" className="ml-2">{ingredient.type}</Chip>
+                  </div>}
                   description={<MyTooltip
                     content={ingredient.description}
                     textEllipsis

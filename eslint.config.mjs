@@ -13,9 +13,11 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
-      'react-hooks/exhaustive-deps': 0,
-    }
-  }
+      'react-hooks/exhaustive-deps': 0, // 关闭 exhaustive-deps
+      'comma-dangle': ['error', 'always-multiline'], // 必须使用尾随逗号
+      'semi': ['error', 'always'], // 强制结尾分号
+    },
+  },
 ];
 
 export default eslintConfig;

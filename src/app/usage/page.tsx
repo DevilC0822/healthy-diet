@@ -83,7 +83,7 @@ export default function User() {
 
   const onReset = () => {
     setFilter({ ...filter, productName: '', model: defaultModel });
-  }
+  };
   useEffect(() => {
     onSearch({ current: pageInfo.current, size: pageInfo.size });
   }, []);

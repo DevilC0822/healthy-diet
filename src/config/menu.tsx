@@ -16,6 +16,12 @@ export const menus: Menu[] = [
   {
     title: '识配料',
     key: 'recognize',
+    icon: 'solar:card-search-broken',
+    permission: ['*'],
+  },
+  {
+    title: '查配料',
+    key: 'search',
     icon: 'solar:calendar-search-broken',
     permission: ['*'],
   },

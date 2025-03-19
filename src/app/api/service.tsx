@@ -25,11 +25,11 @@ const ServiceMap: { [key: string]: OpenAI } = {
   siliconflow: siliconflowService,
   gemini: geminiService,
   volcengine: volcengineService,
-}
+};
 
 export const getService = (service: string) => {
   if (!ServiceMap[service]) {
     throw new Error(`Service ${service} not found`);
   }
   return ServiceMap[service];
-}
+};

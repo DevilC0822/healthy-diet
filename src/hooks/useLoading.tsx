@@ -24,7 +24,7 @@ export const useLoading = (props?: LoadingProps) => {
         />
       </div>
     </div>,
-    document.body
+    document.body,
   );
 
   const startLoading = () => {
@@ -42,6 +42,6 @@ export const useLoading = (props?: LoadingProps) => {
     stopLoading,
     LoadingComponent,
   };
-}
+};
 
 export default useLoading;

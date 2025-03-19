@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { SuccessResponse, ErrorResponse, Execution } from '@/utils';
 import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
 import { jwtVerify } from 'jose';
-
-connectToDatabase();
 
 export async function GET(request: NextRequest) {
   return Execution(async () => {
@@ -24,7 +21,7 @@ export async function GET(request: NextRequest) {
         });
       }
       return ErrorResponse('Token 验证失败', {
-        code: 401
+        code: 401,
       });
     }
   });

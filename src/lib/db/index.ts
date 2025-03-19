@@ -1,3 +1,4 @@
+'use server';
 import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -12,9 +13,12 @@ export async function connectToDatabase() {
   if (cachedClient) {
     return cachedClient;
   }
-
   try {
-    const client = await mongoose.connect(MONGODB_URI!);
+    const client = await mongoose.connect(MONGODB_URI!, {
+      serverSelectionTimeoutMS: 60000, // 服务器选择超时
+      socketTimeoutMS: 60000, // Socket 超时
+      connectTimeoutMS: 60000, // 连接超时
+    });
     cachedClient = client;
     return client;
   } catch (error) {

@@ -2,10 +2,9 @@ import Ingredients from '@/lib/db/models/ingredients';
 import Usage from '@/lib/db/models/usage';
 import { SuccessResponse, ErrorResponse, Execution } from '@/utils';
 import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
 import { getService } from '@/app/api/service';
 import dayjs from 'dayjs';
-import { models } from '@/config/index';
+import { models } from '@/config';
 
 const isJson = (str: string | null) => {
   if (!str) {
@@ -19,8 +18,6 @@ const isJson = (str: string | null) => {
   }
 };
 
-connectToDatabase();
-
 const prompt_for_CN = `
   You are a professional nutritionist. Now, you need to identify the ingredient list in the image and provide the name and a brief introduction for each ingredient (confirming whether it affects human health).
   Please complete the task according to the following steps:
@@ -29,6 +26,7 @@ const prompt_for_CN = `
   3. Provide a brief introduction for each ingredient, explaining its impact on human health.
   4. determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
   5. Please return in Chinese using the string type.
+  6. Please return the type of the ingredient in the string type.
   please using this JSON schema: 
   {
     isIncludeIngredientList: boolean,
@@ -37,6 +35,7 @@ const prompt_for_CN = `
       name: string,
       description: string,
       isDangerous: boolean,
+      type: string,
     }[],
   }
 `;
@@ -48,6 +47,8 @@ const prompt_for_EN = `
   2. For each identified ingredient, provide its name.
   3. Provide a brief introduction for each ingredient, explaining its impact on human health.
   4. determine whether the ingredient is harmful to human health, indicated by a boolean value (true indicates harmful, false indicates not harmful).
+  5. Please return in English using the string type.
+  6. Please return the type of the ingredient in the string type.
   please using this JSON schema: 
   {
     isIncludeIngredientList: boolean,
@@ -56,6 +57,7 @@ const prompt_for_EN = `
       name: string,
       description: string,
       isDangerous: boolean,
+      type: string,
     }[],
   }
 `;
@@ -65,8 +67,7 @@ export async function POST(request: NextRequest) {
   return Execution(async () => {
     const contentType = request.headers.get('content-type') || '';
     const lang = request.headers.get('lang') || 'CN';
-    const createBy = request.headers.get('CreateBy') || '';
-    console.log(createBy);
+    const createBy = request.headers.get('CreateBy') || '匿名用户';
     const multipartFormDataRegex = /^multipart\/form-data;.*boundary.*$/;
     if (!multipartFormDataRegex.test(contentType)) {
       return ErrorResponse('请求格式错误：需要 multipart/form-data');
@@ -124,8 +125,6 @@ export async function POST(request: NextRequest) {
     if (!result.isIncludeIngredientList) {
       return ErrorResponse('图片中不包含配料表，如果确定图片中包含配料表，请切换模型重新上传');
     }
-    console.log(result);
-    
     const currentTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
     await Usage.create({
       createBy,
@@ -149,6 +148,8 @@ export async function POST(request: NextRequest) {
           updatedAt: currentTime,
           inSourceModel: modelLabel,
           count: ingredient.count + 1,
+          type: item.type,
+          inType: '1',
         } });
         continue;
       }
@@ -160,6 +161,7 @@ export async function POST(request: NextRequest) {
         inSourceModel: modelLabel,
         createdAt: currentTime,
         updatedAt: currentTime,
+        type: item.type,
       });
     }
     return SuccessResponse({

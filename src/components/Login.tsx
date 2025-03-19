@@ -33,7 +33,7 @@ const errorMap: Record<string, { field: string; message: string }> = {
     field: 'username',
     message: '账号不合法，请使用其他账号',
   },
-}
+};
 export default function Login({ onLoginSuccess, onClose }: LoginProps) {
   const [type, setType] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
@@ -86,7 +86,7 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
       message: '',
     });
     return true;
-  }
+  };
   const vaildPassword = (value: string) => {
     if (!value) {
       setPasswordError({
@@ -122,7 +122,7 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
       message: '',
     });
     return true;
-  }
+  };
   const vaildConfirmPassword = (value: string, oldPassword?: string) => {
     if (!value) {
       return false;
@@ -139,7 +139,7 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
       message: '',
     });
     return true;
-  }
+  };
   const onChangeCardType = (type: 'login' | 'register') => {
     setType(type);
     if (type === 'login') {
@@ -170,7 +170,7 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
         message: '',
       });
     }
-  }
+  };
   const onLogin = async () => {
     if (!vaildUsername(username)) {
       return;
@@ -187,12 +187,12 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
         if (errorMap[data.message]?.field === 'username') {
           setUsernameError({
             status: true,
-            message: errorMap[data.message].message
+            message: errorMap[data.message].message,
           });
         } else if (errorMap[data.message]?.field === 'password') {
           setPasswordError({
             status: true,
-            message: errorMap[data.message].message
+            message: errorMap[data.message].message,
           });
         } else {
           setUsernameError({
@@ -210,8 +210,8 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
       onClose();
     }).finally(() => {
       setIsLoading(false);
-    })
-  }
+    });
+  };
   const onRegister = async () => {
     if (!vaildUsername(username)) {
       return;
@@ -245,8 +245,8 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
       onClose();
     }).finally(() => {
       setIsLoading(false);
-    })
-  }
+    });
+  };
 
   return (
     <Card className="relative p-2">

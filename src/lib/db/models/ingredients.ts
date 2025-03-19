@@ -6,6 +6,7 @@ const IngredientsSchema = new mongoose.Schema({
   count: { type: Number, required: true, default: 1 },
   inType: { type: String, required: true, default: '0' },
   inSourceModel: { type: String, required: false, default: '' },
+  type: { type: String, required: true, default: '' }, // 配料类型
   createdAt: { type: String, required: true },
   updatedAt: { type: String, required: true },
 });

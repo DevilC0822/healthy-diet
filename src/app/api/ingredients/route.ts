@@ -2,9 +2,6 @@ import Ingredients from '@/lib/db/models/ingredients';
 import { SuccessResponse, ErrorResponse, Execution } from '@/utils';
 import dayjs from 'dayjs';
 import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
-
-connectToDatabase();
 
 export async function GET(request: NextRequest) {
   return Execution(async () => {
@@ -20,7 +17,7 @@ export async function GET(request: NextRequest) {
     const query: { [key: string]: unknown } = {
       name: name ? { $regex: name, $options: 'i' } : undefined,
       inType: inType ? { $regex: inType, $options: 'i' } : undefined,
-      inSourceModel: inSourceModel ? { $regex: inSourceModel, $options: 'i' } : undefined,
+      inSourceModel: inSourceModel ? { $regex: decodeURI(inSourceModel), $options: 'i' } : undefined,
       // count: { $gte: minCount, $lte: maxCount }
     };
     // 删除所有 undefined 的 key

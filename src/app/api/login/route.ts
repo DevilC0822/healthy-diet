@@ -1,11 +1,8 @@
 import User from '@/lib/db/models/user';
 import { SuccessResponse, ErrorResponse, Execution } from '@/utils';
 import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
 import { decryptRsaPassword } from '@/app/api/utils';
 import { signToken } from '@/utils';
-
-connectToDatabase();
 
 export async function POST(request: NextRequest) {
   return Execution(async () => {

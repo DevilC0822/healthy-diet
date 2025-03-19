@@ -55,8 +55,8 @@ const pageInfoAtom = atom({
 
 const inTypeOptions = [
   { label: '全部', value: '' },
-  { label: 'AI 入库', value: '1' },
-  { label: '手动入库', value: '0' },
+  { label: '手动查询', value: '0' },
+  { label: '图片识别', value: '1' },
 ];
 
 export default function Resource() {
@@ -90,7 +90,7 @@ export default function Resource() {
 
   const onReset = () => {
     setFilter({ ...filter, name: '', inType: '', inSourceModel: defaultModel, count: [0, 1000] });
-  }
+  };
 
   useEffect(() => {
     onSearch({ current: pageInfo.current, size: pageInfo.size });
@@ -196,17 +196,19 @@ export default function Resource() {
         >
           <TableHeader>
             <TableColumn width={160} key="name">名称</TableColumn>
+            <TableColumn width={120} key="type">类型</TableColumn>
             <TableColumn width={300} key="description">描述</TableColumn>
             <TableColumn width={120} key="count">入库次数</TableColumn>
             <TableColumn width={120} key="inType">入库方式</TableColumn>
             <TableColumn width={220} key="inSourceModel">入库模型</TableColumn>
-            <TableColumn width={120} key="createdAt">创建时间</TableColumn>
-            <TableColumn width={120} key="updatedAt">更新时间</TableColumn>
+            <TableColumn width={160} key="createdAt">创建时间</TableColumn>
+            <TableColumn width={160} key="updatedAt">更新时间</TableColumn>
           </TableHeader>
           <TableBody>
             {ingredients?.map((ingredient) => (
               <TableRow key={ingredient.name}>
                 <TableCell>{ingredient.name}</TableCell>
+                <TableCell>{ingredient.type}</TableCell>
                 <TableCell>
                   <MyTooltip content={ingredient.description} textEllipsis lineClamp={2}>
                     {ingredient.description}

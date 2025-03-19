@@ -1,9 +1,6 @@
 import Usage from '@/lib/db/models/usage';
 import { SuccessResponse, Execution } from '@/utils';
 import { NextRequest } from 'next/server';
-import { connectToDatabase } from '@/lib/db';
-
-connectToDatabase();
 
 export async function GET(request: NextRequest) {
   return Execution(async () => {

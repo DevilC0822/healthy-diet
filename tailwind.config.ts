@@ -6,7 +6,7 @@ export default {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}"
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   safelist: [
     'line-clamp-1',
@@ -28,6 +28,7 @@ export default {
       },
       animation: {
         shine: "shine var(--duration) infinite linear",
+        pulse: "pulse var(--duration) ease-out infinite",
       },
       keyframes: {
         "aurora-border": {
@@ -66,6 +67,10 @@ export default {
           to: {
             "background-position": "0% 0%",
           },
+        },
+        pulse: {
+          "0%, 100%": { boxShadow: "0 0 0 0 var(--pulse-color)" },
+          "50%": { boxShadow: "0 0 0 8px var(--pulse-color)" },
         },
       },
     },

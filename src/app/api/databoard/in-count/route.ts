@@ -1,4 +1,4 @@
-import Usage from '@/lib/db/models/usage';
+import Ingredient from '@/lib/db/models/ingredients';
 import { SuccessResponse, Execution } from '@/utils';
 import { NextRequest } from 'next/server';
 import dayjs from 'dayjs';
@@ -14,31 +14,38 @@ function generateDateArray(startDate: string, endDate: string) {
   return dates;
 }
 
+const inTypeMap: Record<string, string | undefined> = {
+  total: undefined,
+  input: '0',
+  recognize: '1',
+};
+
 export async function GET(request: NextRequest) {
   return Execution(async () => {
     const { searchParams } = new URL(request.url);
     const startDate = searchParams.get('startDate') || '';
     const endDate = searchParams.get('endDate') || '';
-    const type = searchParams.get('type') || 'total';
+    const inType = searchParams.get('inType') || '';
+    const inTypeKey = inTypeMap[inType];
     console.log(startDate, endDate);
-    const usages = await Usage.find({
-      createdAt: {
+    const ingredients = await Ingredient.find({
+      updatedAt: {
         $gte: dayjs(startDate).startOf('day').format('YYYY-MM-DD'),
         $lte: dayjs(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD'),
       },
     });
     const dates = generateDateArray(startDate, endDate);
-    const usagesByDay = dates.map((date) => ({
+    const inCountByDay = dates.map((date) => ({
       date,
-      usage: usages.filter((usage) => dayjs(usage?.createdAt).format('YYYY-MM-DD') === date).reduce((acc, usage) => acc + usage.usage[`${type}_tokens`], 0),
+      count: ingredients.filter((ingredient) => (inTypeKey ? inTypeKey === ingredient.inType : true) && dayjs(ingredient?.updatedAt).format('YYYY-MM-DD') === date).reduce((acc, ingredient) => acc + ingredient.count, 0),
     }));
     return SuccessResponse({
-      usage: {
-        total: usages.reduce((acc, usage) => acc + usage.usage.total_tokens, 0),
-        prompt: usages.reduce((acc, usage) => acc + usage.usage.prompt_tokens, 0),
-        completion: usages.reduce((acc, usage) => acc + usage.usage.completion_tokens, 0),
+      counts: {
+        total: ingredients.reduce((acc, ingredient) => acc + ingredient.count, 0),
+        input: ingredients.filter((ingredient) => ingredient.inType === '0').reduce((acc, ingredient) => acc + ingredient.count, 0),
+        recognize: ingredients.filter((ingredient) => ingredient.inType === '1').reduce((acc, ingredient) => acc + ingredient.count, 0),
       },
-      usagesByDay,
+      inCountByDay,
     });
   });
 }

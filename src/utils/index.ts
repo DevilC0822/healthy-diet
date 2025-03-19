@@ -47,7 +47,7 @@ export function myFetch(url: string, options: RequestInit = {}) {
     options.headers = {
       'Authorization': `Bearer ${token}`,
       ...options.headers,
-    }
+    };
   }
   return fetch(url, options);
 }
