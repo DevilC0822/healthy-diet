@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
           inSourceModel: modelLabel,
           count: ingredient.count + 1,
           type: result.type,
-          inType: '2',
+          inType: '0',
         },
       });
     } else {
