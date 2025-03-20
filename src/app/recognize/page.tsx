@@ -6,10 +6,10 @@ import { FlickeringGrid } from "@/components/FlickeringGrid";
 import { AuroraText } from "@/components/AuroraText";
 import { models } from "@/config";
 import { useLoading } from "@/hooks/useLoading";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import MyTooltip from "@/components/MyTooltip";
 import SparklesText from '@/components/SparklesText';
-import { isMobileDevice } from "@/lib/utils";
+import { isMobileDevice } from "@/utils";
 import { userInfoAtom } from "@/store";
 import PulsatingButton from "@/components/PulsatingButton";
 
@@ -41,9 +41,6 @@ const UploadComponent = ({ result = false, className }: { result?: boolean, clas
         maxOpacity={0.5}
         flickerChance={0.1}
       />
-      {/* <h1 className="text-4xl font-bold tracking-tighter">
-        上传 <AuroraText>配料图片</AuroraText>
-      </h1> */}
       <PulsatingButton
         className="text-2xl font-bold"
       >

@@ -41,6 +41,7 @@ export async function Execution(fn: () => Promise<NextResponse>): Promise<NextRe
   }
 }
 
+// 添加 token 请求头的 Fetch
 export function myFetch(url: string, options: RequestInit = {}) {
   const token = window.localStorage.getItem('diet-token');
   if (token) {
@@ -52,9 +53,16 @@ export function myFetch(url: string, options: RequestInit = {}) {
   return fetch(url, options);
 }
 
+// 生成 token
 export async function signToken({ username, role }: { username: string, role: string }) {
   return await new SignJWT({ username, role })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('30d')
     .sign(new TextEncoder().encode(process.env.JWT_SECRET as string));
 }
+
+
+// 判断是否是移动端设备 使用 navigator.userAgent 判断
+export const isMobileDevice = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import React from "react";
 
 interface AuroraTextProps {
