@@ -44,6 +44,7 @@ export const zh_cn: Translation = {
   [Key.ingredientName]: '配料名称',
   [Key.ingredientNamePlaceholder]: '请输入配料名称',
   [Key.inType]: '入库方式',
+  [Key.ingredientType]: '配料类型',
   [Key.inSourceModel]: '入库模型',
   [Key.optionAll]: '全部',
   [Key.btnSearch]: '搜索',

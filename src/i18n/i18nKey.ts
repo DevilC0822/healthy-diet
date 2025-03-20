@@ -42,6 +42,7 @@ enum I18nKey {
   ingredientName = 'ingredientName',
   ingredientNamePlaceholder = 'ingredientNamePlaceholder',
   inType = 'inType',
+  ingredientType = 'ingredientType',
   inSourceModel = 'inSourceModel',
   optionAll = 'optionAll',
   btnSearch = 'btnSearch',

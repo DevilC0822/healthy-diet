@@ -198,7 +198,7 @@ export default function Resource() {
         >
           <TableHeader>
             <TableColumn width={160} key="name">{i18n[I18nKey.ingredientName]}</TableColumn>
-            <TableColumn width={120} key="type">{i18n[I18nKey.inType]}</TableColumn>
+            <TableColumn width={120} key="type">{i18n[I18nKey.ingredientType]}</TableColumn>
             <TableColumn width={300} key="description">{i18n[I18nKey.ingredientDescription]}</TableColumn>
             <TableColumn width={120} key="count">{i18n[I18nKey.ingredientCount]}</TableColumn>
             <TableColumn width={120} key="inType">{i18n[I18nKey.inType]}</TableColumn>
