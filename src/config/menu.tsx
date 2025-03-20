@@ -1,44 +1,45 @@
 import type { Menu } from '@/types';
+import { I18nKey } from '@/i18n';
 
 export const menus: Menu[] = [
   {
-    title: '数据看板',
+    title: I18nKey.menuDataboard,
     key: 'databoard',
     icon: 'solar:diagram-up-broken',
     permission: ['*'],
   },
   {
-    title: '配料库',
+    title: I18nKey.menuResource,
     key: 'resource',
     icon: 'solar:folder-line-duotone',
     permission: ['*'],
   },
   {
-    title: '识配料',
+    title: I18nKey.menuIngredientRecognize,
     key: 'recognize',
     icon: 'solar:card-search-broken',
     permission: ['*'],
   },
   {
-    title: '查配料',
+    title: I18nKey.menuIngredientSearch,
     key: 'search',
     icon: 'solar:calendar-search-broken',
     permission: ['*'],
   },
   {
-    title: '模型库',
+    title: I18nKey.menuModelLibrary,
     key: 'models',
     icon: 'solar:box-minimalistic-broken',
     permission: ['*'],
   },
   {
-    title: '使用记录',
+    title: I18nKey.menuUsage,
     key: 'usage',
     icon: 'solar:bill-list-outline',
     permission: ['admin', 'onlyReadAdmin'],
   },
   {
-    title: '用户管理',
+    title: I18nKey.menuUserManagement,
     key: 'user',
     icon: 'solar:user-circle-outline',
     permission: ['admin', 'onlyReadAdmin'],

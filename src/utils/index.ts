@@ -66,3 +66,16 @@ export async function signToken({ username, role }: { username: string, role: st
 export const isMobileDevice = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
+
+/**
+ * 替换字符串中的 {{key}} 为 value
+ * @param str 字符串
+ * @param obj 替换的对象
+ * @returns 替换后的字符串
+ */
+export const replaceString = (str: string, obj: Record<string, string>) => {
+  Object.entries(obj).forEach(([key, value]) => {
+    str = str.replace(`{{${key}}}`, value);
+  });
+  return str;
+};

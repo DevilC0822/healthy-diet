@@ -26,10 +26,11 @@ import MyTooltip from '@/components/MyTooltip';
 import { useLoading } from '@/hooks/useLoading';
 import SparklesText from '@/components/SparklesText';
 import { models } from '@/config';
+import { i18nAtom, I18nKey, useAtomValue } from '@/i18n';
 
 const modelOptions = [
   {
-    label: '全部',
+    label: I18nKey.optionAll,
     value: '',
   },
   ...Object.keys(models).map((model) => ({
@@ -54,12 +55,13 @@ const pageInfoAtom = atom({
 });
 
 const inTypeOptions = [
-  { label: '全部', value: '' },
-  { label: '手动查询', value: '0' },
-  { label: '图片识别', value: '1' },
+  { label: I18nKey.inTypeTotal, value: '' },
+  { label: I18nKey.inTypeInput, value: '0' },
+  { label: I18nKey.inTypeRecognize, value: '1' },
 ];
 
 export default function Resource() {
+  const i18n = useAtomValue(i18nAtom);
   const [filter, setFilter] = useAtom(filterAtom);
   const [ingredients, setIngredients] = useAtom(ingredientsAtom);
   const [pageInfo, setPageInfo] = useAtom(pageInfoAtom);
@@ -98,14 +100,14 @@ export default function Resource() {
   return (
     <>
       <CardHeader className='flex flex-col gap-2 items-start'>
-        <SparklesText text="配料资源库" />
+        <SparklesText text={i18n[I18nKey.resourceTitle]} />
         <div className="flex items-end gap-4 w-[80%] max-md:w-full max-md:flex-wrap mt-2">
           <div className='flex items-center gap-2 max-md:w-full'>
-            <span className='text-nowrap'>配料名称</span>
+            <span className='text-nowrap'>{i18n[I18nKey.ingredientName]}</span>
             <Input
               color="secondary"
-              aria-label="配料名称"
-              placeholder="请输入配料名称"
+              aria-label={i18n[I18nKey.ingredientName]}
+              placeholder={i18n[I18nKey.ingredientNamePlaceholder]}
               className="min-w-[200px]"
               endContent={<SearchIcon className="text-default-400" width={16} />}
               size="sm"
@@ -114,11 +116,11 @@ export default function Resource() {
             />
           </div>
           <div className='flex items-center gap-2 max-md:w-full'>
-            <span className='text-nowrap'>入库方式</span>
+            <span className='text-nowrap'>{i18n[I18nKey.inType]}</span>
             <Select
               className='w-[200px] max-md:w-full'
               color="secondary"
-              aria-label="入库方式"
+              aria-label={i18n[I18nKey.inType]}
               size="sm"
               selectedKeys={[filter.inType]}
               onChange={(e) => {
@@ -130,17 +132,17 @@ export default function Resource() {
             >
               {inTypeOptions.map((option) => (
                 <SelectItem color="secondary" key={option.value}>
-                  {option.label}
+                  {i18n[option.label]}
                 </SelectItem>
               ))}
             </Select>
           </div>
           <div className='flex items-center gap-2 max-md:w-full'>
-            <span className='text-nowrap'>入库模型</span>
+            <span className='text-nowrap'>{i18n[I18nKey.inSourceModel]}</span>
             <Select
               className='w-[200px] max-md:w-full'
               color="secondary"
-              aria-label="入库模型"
+              aria-label={i18n[I18nKey.inSourceModel]}
               size="sm"
               selectedKeys={[filter.inSourceModel]}
               onChange={(e) => {
@@ -149,7 +151,7 @@ export default function Resource() {
             >
               {modelOptions.map((option) => (
                 <SelectItem color="secondary" key={option.value}>
-                  {option.label}
+                  {Object.keys(I18nKey).includes(option.label) ? i18n[option.label as keyof typeof I18nKey] : option.label}
                 </SelectItem>
               ))}
             </Select>
@@ -168,8 +170,8 @@ export default function Resource() {
               />
             </div> */}
           <div className="flex items-center gap-2 max-md:w-full">
-            <Button size="sm" color="secondary" onPress={() => onSearch()}>查询</Button>
-            <Button size="sm" color="secondary" onPress={onReset}>重置</Button>
+            <Button size="sm" color="secondary" onPress={() => onSearch()}>{i18n[I18nKey.btnSearch]}</Button>
+            <Button size="sm" color="secondary" onPress={onReset}>{i18n[I18nKey.btnReset]}</Button>
           </div>
         </div>
       </CardHeader>
@@ -195,14 +197,14 @@ export default function Resource() {
           }
         >
           <TableHeader>
-            <TableColumn width={160} key="name">名称</TableColumn>
-            <TableColumn width={120} key="type">类型</TableColumn>
-            <TableColumn width={300} key="description">描述</TableColumn>
-            <TableColumn width={120} key="count">入库次数</TableColumn>
-            <TableColumn width={120} key="inType">入库方式</TableColumn>
-            <TableColumn width={220} key="inSourceModel">入库模型</TableColumn>
-            <TableColumn width={160} key="createdAt">创建时间</TableColumn>
-            <TableColumn width={160} key="updatedAt">更新时间</TableColumn>
+            <TableColumn width={160} key="name">{i18n[I18nKey.ingredientName]}</TableColumn>
+            <TableColumn width={120} key="type">{i18n[I18nKey.inType]}</TableColumn>
+            <TableColumn width={300} key="description">{i18n[I18nKey.ingredientDescription]}</TableColumn>
+            <TableColumn width={120} key="count">{i18n[I18nKey.ingredientCount]}</TableColumn>
+            <TableColumn width={120} key="inType">{i18n[I18nKey.inType]}</TableColumn>
+            <TableColumn width={220} key="inSourceModel">{i18n[I18nKey.inSourceModel]}</TableColumn>
+            <TableColumn width={160} key="createdAt">{i18n[I18nKey.createdAt]}</TableColumn>
+            <TableColumn width={160} key="updatedAt">{i18n[I18nKey.updatedAt]}</TableColumn>
           </TableHeader>
           <TableBody>
             {ingredients?.map((ingredient) => (

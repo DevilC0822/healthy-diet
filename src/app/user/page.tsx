@@ -26,12 +26,12 @@ import {
 } from '@heroui/react';
 import { SearchIcon } from "@heroui/shared-icons";
 import { User as TUser } from '@/types';
-import MyTooltip from '@/components/MyTooltip';
 import { useLoading } from '@/hooks/useLoading';
 import SparklesText from '@/components/SparklesText';
 import ModelConfirm from '@/components/ModelConfirm';
 import { myFetch } from '@/utils';
-
+import { i18nAtom, I18nKey, useAtomValue } from '@/i18n';
+import { roleOptions } from '@/config';
 const filterAtom = atom({
   username: '',
   role: '',
@@ -43,14 +43,8 @@ const pageInfoAtom = atom({
   total: 1,
 });
 
-const roleOptions = [
-  { label: '全部', value: '' },
-  { label: '管理员', value: 'admin' },
-  { label: '只读管理员', value: 'onlyReadAdmin' },
-  { label: '普通用户', value: 'user' },
-];
-
 export default function User() {
+  const i18n = useAtomValue(i18nAtom);
   const [filter, setFilter] = useAtom(filterAtom);
   const [users, setUsers] = useAtom(usersAtom);
   const [pageInfo, setPageInfo] = useAtom(pageInfoAtom);
@@ -139,14 +133,14 @@ export default function User() {
   return (
     <>
       <CardHeader className='flex flex-col gap-2 items-start'>
-        <SparklesText text="用户管理" />
+        <SparklesText text={i18n[I18nKey.userManagementTitle]} />
         <div className="flex items-end gap-4 w-[80%] max-md:w-full max-md:flex-wrap mt-2">
           <div className='flex items-center gap-2 max-md:w-full'>
-            <span className='text-nowrap'>用户名</span>
+            <span className='text-nowrap'>{i18n[I18nKey.username]}</span>
             <Input
               color="secondary"
-              aria-label="用户名"
-              placeholder="请输入用户名"
+              aria-label={i18n[I18nKey.username]}
+              placeholder={i18n[I18nKey.usernamePlaceholder]}
               className="min-w-[200px]"
               endContent={<SearchIcon className="text-default-400" width={16} />}
               size="sm"
@@ -155,11 +149,11 @@ export default function User() {
             />
           </div>
           <div className='flex items-center gap-2 max-md:w-full'>
-            <span className='text-nowrap'>角色</span>
+            <span className='text-nowrap'>{i18n[I18nKey.role]}</span>
             <Select
               className='w-[200px] max-md:w-full'
               color="secondary"
-              aria-label="角色"
+              aria-label={i18n[I18nKey.role]}
               size="sm"
               selectedKeys={[filter.role]}
               onChange={(e) => {
@@ -171,14 +165,14 @@ export default function User() {
             >
               {roleOptions.map((option) => (
                 <SelectItem color="secondary" key={option.value}>
-                  {option.label}
+                  {i18n[option.label]}
                 </SelectItem>
               ))}
             </Select>
           </div>
           <div className="flex items-center gap-2 max-md:w-full">
-            <Button size="sm" color="secondary" onPress={() => onSearch()}>查询</Button>
-            <Button size="sm" color="secondary" onPress={onReset}>重置</Button>
+            <Button size="sm" color="secondary" onPress={() => onSearch()}>{i18n[I18nKey.btnSearch]}</Button>
+            <Button size="sm" color="secondary" onPress={onReset}>{i18n[I18nKey.btnReset]}</Button>
           </div>
         </div>
       </CardHeader>
@@ -187,7 +181,7 @@ export default function User() {
           rowHeight={60}
           isStriped
           className="min-w-[1200px]"
-          aria-label="用户列表"
+          aria-label={i18n[I18nKey.userList]}
           bottomContent={
             <div className='flex justify-end mt-2'>
               <Pagination
@@ -204,34 +198,30 @@ export default function User() {
           }
         >
           <TableHeader>
-            <TableColumn width={160} key="username">用户名</TableColumn>
-            <TableColumn width={120} key="role">角色</TableColumn>
-            <TableColumn width={180} key="createdAt">创建时间</TableColumn>
-            <TableColumn width={180} key="updatedAt">更新时间</TableColumn>
-            <TableColumn width={120} key="action">操作</TableColumn>
+            <TableColumn width={160} key="username">{i18n[I18nKey.username]}</TableColumn>
+            <TableColumn width={120} key="role">{i18n[I18nKey.role]}</TableColumn>
+            <TableColumn width={180} key="createdAt">{i18n[I18nKey.createdAt]}</TableColumn>
+            <TableColumn width={180} key="updatedAt">{i18n[I18nKey.updatedAt]}</TableColumn>
+            <TableColumn width={120} key="action">{i18n[I18nKey.action]}</TableColumn>
           </TableHeader>
           <TableBody>
             {users?.map((user) => (
               <TableRow key={user.username}>
                 <TableCell>{user.username}</TableCell>
-                <TableCell>
-                  <MyTooltip content={roleOptions.find((option) => option.value === user.role)?.label} textEllipsis lineClamp={2}>
-                    {roleOptions.find((option) => option.value === user.role)?.label}
-                  </MyTooltip>
-                </TableCell>
+                <TableCell>{i18n[roleOptions.find((option) => option.value === user.role)?.label as keyof typeof I18nKey]}</TableCell>
                 <TableCell>{user.createdAt}</TableCell>
                 <TableCell>{user.updatedAt}</TableCell>
                 <TableCell className='flex items-center'>
                   <Button size="sm" variant="light" color="secondary" onPress={() => {
                     setCurrentUser(user);
                     onOpen();
-                  }}>编辑</Button>
+                  }}>{i18n[I18nKey.editUser]}</Button>
                   <ModelConfirm
-                    title="删除用户"
-                    description="确定删除该用户吗？"
+                    title={i18n[I18nKey.deleteUser]}
+                    description={i18n[I18nKey.deleteUserTip]}
                     onConfirm={(closeFn) => onDelete(user, closeFn)}
                   >
-                    删除
+                    {i18n[I18nKey.deleteUser]}
                   </ModelConfirm>
                 </TableCell>
               </TableRow>
@@ -243,23 +233,23 @@ export default function User() {
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           <ModalHeader>
-            编辑用户
+            {i18n[I18nKey.editUser]}
           </ModalHeader>
           <ModalBody>
             <Input
               disabled
-              label="用户名"
+              label={i18n[I18nKey.username]}
               color="secondary"
-              aria-label="用户名"
-              placeholder="请输入用户名"
+              aria-label={i18n[I18nKey.username]}
+              placeholder={i18n[I18nKey.usernamePlaceholder]}
               value={currentUser.username}
               onValueChange={(value) => setCurrentUser({ ...currentUser, username: value })}
             />
             <Select
-              label="角色"
+              label={i18n[I18nKey.role]}
               className='max-md:w-full'
               color="secondary"
-              aria-label="角色"
+              aria-label={i18n[I18nKey.role]}
               size="sm"
               selectedKeys={[currentUser.role]}
               onChange={(e) => {
@@ -277,8 +267,8 @@ export default function User() {
             </Select>
           </ModalBody>
           <ModalFooter>
-            <Button size="sm" color="default" onPress={onOpenChange}>取消</Button>
-            <Button size="sm" color="secondary" onPress={onEdit}>确定</Button>
+            <Button size="sm" color="default" onPress={onOpenChange}>{i18n[I18nKey.cancel]}</Button>
+            <Button size="sm" color="secondary" onPress={onEdit}>{i18n[I18nKey.confirm]}</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

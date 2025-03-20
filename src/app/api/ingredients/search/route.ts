@@ -18,7 +18,7 @@ const isJson = (str: string | null) => {
 };
 
 const getPrompt = (lang: string, name: string) => {
-  if (lang === 'CN') {
+  if (lang === 'zh_cn') {
     return `
       You are a professional nutritionist. Users should provide the names of food ingredients. Based on the food ingredient names provided by the user, please provide the corresponding food ingredient name, detailed description, type, and whether it is harmful to the human body.
       first indicates is ${name}, Please return in Chinese using the string type and use the following JSON format to return the information:
@@ -48,7 +48,7 @@ const getPrompt = (lang: string, name: string) => {
 export async function POST(request: NextRequest) {
   return Execution(async () => {
     const { name, model, modelLabel } = await request.json();
-    const lang = request.headers.get('lang') ?? 'CN';
+    const lang = request.headers.get('lang') ?? 'zh_cn';
     const createBy = request.headers.get('CreateBy') ?? '匿名用户';
     const service = models[model].service;
     if (!service) {

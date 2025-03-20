@@ -7,6 +7,8 @@ import { models } from "@/config";
 import { useLoading } from "@/hooks/useLoading";
 import SparklesText from '@/components/SparklesText';
 import { userInfoAtom } from "@/store";
+import { i18nAtom, I18nKey, useAtomValue } from "@/i18n";
+import { langAtom } from "@/store";
 
 const modelNameAtom = atom(Object.keys(models)[0]);
 const nameAtom = atom('');
@@ -18,6 +20,8 @@ const resultAtom = atom<{
 } | null>(null);
 
 export default function SearchIngredient() {
+  const i18n = useAtomValue(i18nAtom);
+  const lang = useAtomValue(langAtom);
   const [modelName, setModelName] = useAtom(modelNameAtom);
   const [name, setName] = useAtom(nameAtom);
   const [result, setResult] = useAtom(resultAtom);
@@ -27,8 +31,8 @@ export default function SearchIngredient() {
   const onSearch = () => {
     if (name.length === 0) {
       addToast({
-        title: '请输入配料名称',
-        description: '请输入配料名称',
+        title: i18n[I18nKey.ingredientNameRequired],
+        description: i18n[I18nKey.ingredientNameRequiredTip],
         color: 'danger',
       });
       return;
@@ -38,6 +42,7 @@ export default function SearchIngredient() {
       method: 'POST',
       headers: {
         'CreateBy': userInfo?.username ?? '',
+        'Lang': lang,
       },
       body: JSON.stringify({
         name,
@@ -47,7 +52,7 @@ export default function SearchIngredient() {
     }).then(res => res.json()).then(data => {
       if (!data.success) {
         addToast({
-          title: '识别失败',
+          title: i18n[I18nKey.searchFail],
           description: data.message,
           color: 'danger',
         });
@@ -61,11 +66,11 @@ export default function SearchIngredient() {
   return (
     <>
       <CardHeader className='flex flex-col gap-2 items-start'>
-        <SparklesText text="配料搜索" />
+        <SparklesText text={i18n[I18nKey.ingredientSearchTitle]} />
         <div className="w-full flex flex-col gap-2 items-start mt-2">
           <div className="flex items-center gap-2">
             <p className="text-xl font-bold tracking-tighter flex items-center max-md:text-base">
-              <span className="max-md:text-sm">模型：</span><AuroraText>{models[modelName].label}</AuroraText>
+              <span className="max-md:text-sm">{i18n[I18nKey.model]}：</span><AuroraText>{models[modelName].label}</AuroraText>
             </p>
             <Dropdown trigger="press" placement="bottom" backdrop="blur">
               <DropdownTrigger>
@@ -76,7 +81,7 @@ export default function SearchIngredient() {
                   }}
                   variant="shadow"
                 >
-                  更换模型
+                  {i18n[I18nKey.changeModel]}
                 </Chip>
               </DropdownTrigger>
               <DropdownMenu
@@ -98,25 +103,28 @@ export default function SearchIngredient() {
             </Dropdown>
           </div>
           <span className="text-sm text-gray-500">
-            {models[modelName].description}
+            {lang === 'zh_cn' ? models[modelName].description : models[modelName].descriptionEn}
           </span>
         </div>
       </CardHeader>
       <CardBody className='overflow-x-scroll'>
         <div className="flex items-center gap-2 w-[456px] max-md:w-full">
-          <Input
-            placeholder="请输入配料名称"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            isClearable
-            onClear={() => setName('')}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                onSearch();
-              }
-            }}
-          />
-          <Button onPress={onSearch}>搜索</Button>
+          <div className="flex items-center gap-2 flex-1">
+            <span className="text-sm text-gray-500 text-nowrap">{i18n[I18nKey.ingredientName]}：</span>
+            <Input
+              placeholder={i18n[I18nKey.ingredientNamePlaceholder]}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              isClearable
+              onClear={() => setName('')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  onSearch();
+                }
+              }}
+            />
+          </div>
+          <Button onPress={onSearch}>{i18n[I18nKey.btnSearch]}</Button>
         </div>
 
         {

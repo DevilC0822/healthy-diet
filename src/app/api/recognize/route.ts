@@ -66,7 +66,7 @@ const prompt_for_EN = `
 export async function POST(request: NextRequest) {
   return Execution(async () => {
     const contentType = request.headers.get('content-type') || '';
-    const lang = request.headers.get('lang') || 'CN';
+    const lang = request.headers.get('lang') || 'zh_cn';
     const createBy = request.headers.get('CreateBy') || '匿名用户';
     const multipartFormDataRegex = /^multipart\/form-data;.*boundary.*$/;
     if (!multipartFormDataRegex.test(contentType)) {
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
             },
             {
               type: "text",
-              text: lang === 'CN' ? prompt_for_CN : prompt_for_EN,
+              text: lang === 'zh_cn' ? prompt_for_CN : prompt_for_EN,
             },
           ],
         },

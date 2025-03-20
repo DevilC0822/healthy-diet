@@ -10,33 +10,40 @@ import {
 } from '@heroui/react';
 import * as echarts from 'echarts';
 import dayjs from 'dayjs';
+import { i18nAtom, I18nKey, useAtomValue } from '@/i18n';
 
 const today = dayjs().format('YYYY-MM-DD');
 
-const tabKeyMap: { [key: string]: { startDate: string; endDate: string } } = {
+const tabKeyMap: { [key: string]: { startDate: string; endDate: string; i18nKey: keyof typeof I18nKey } } = {
   '全部': {
     startDate: '2025-01-01',
     endDate: today,
+    i18nKey: 'tabKeyAll',
   },
   // '近 6 个月': {
   //   startDate: dayjs().subtract(6, 'month').format('YYYY-MM-DD'),
   //   endDate: today,
+  //   i18nKey: 'tabKey6Months',
   // },
   // '近 3 个月': {
   //   startDate: dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
   //   endDate: today,
+  //   i18nKey: 'tabKey3Months',
   // },
   '近 30 天': {
     startDate: dayjs().subtract(29, 'day').format('YYYY-MM-DD'),
     endDate: today,
+    i18nKey: 'tabKey30Days',
   },
   '近 7 天': {
     startDate: dayjs().subtract(6, 'day').format('YYYY-MM-DD'),
     endDate: today,
+    i18nKey: 'tabKey7Days',
   },
   '近 3 天': {
     startDate: dayjs().subtract(2, 'day').format('YYYY-MM-DD'),
     endDate: today,
+    i18nKey: 'tabKey3Days',
   },
 };
 
@@ -57,7 +64,7 @@ const cache = new Map<string, {
   }[];
   counts: {
     key: string;
-    label: string;
+    label: I18nKey;
     value: number;
     lineColor: string;
   }[];
@@ -66,24 +73,25 @@ const cache = new Map<string, {
 let chart: echarts.ECharts;
 
 export default function IngredientInCount() {
+  const i18n = useAtomValue(i18nAtom);
   const chartRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState('全部');
   const [typeTabs, setTypeTabs] = useState([
     {
       key: 'total',
-      label: '全部',
+      label: I18nKey.inTypeTotal,
       value: 0,
       lineColor: '#737ace',
     },
     {
       key: 'input',
-      label: '手动查询',
+      label: I18nKey.inTypeInput,
       value: 0,
       lineColor: '#f095a0',
     },
     {
       key: 'recognize',
-      label: '图片识别',
+      label: I18nKey.inTypeRecognize,
       value: 0,
       lineColor: '#00b7e4',
     },
@@ -187,7 +195,7 @@ export default function IngredientInCount() {
   return (
     <Card>
       <CardHeader className='flex flex-col justify-between items-startDate'>
-        <p className='text-2xl font-bold'>配料入库量</p>
+        <p className='text-2xl font-bold'>{i18n[I18nKey.ingredientInCountTitle]}</p>
         <Tabs
           className='mt-2'
           size="sm"
@@ -195,7 +203,7 @@ export default function IngredientInCount() {
           onSelectionChange={(key) => setCurrent(key as string)}
         >
           {Object.keys(tabKeyMap).map((key) => (
-            <Tab key={key} title={key} />
+            <Tab key={key} title={i18n[tabKeyMap[key].i18nKey]} />
           ))}
         </Tabs>
         <div className="mt-2 flex w-full items-center">
@@ -216,7 +224,7 @@ export default function IngredientInCount() {
                     "text-primary": type === key,
                   })}
                 >
-                  {label}
+                  {i18n[label]}
                 </span>
                 <div className="flex justify-center items-center gap-x-3">
                   <span className="text-3xl font-bold text-foreground">

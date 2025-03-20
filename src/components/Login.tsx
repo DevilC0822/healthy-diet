@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter, Form, Input, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { ShineBorder } from "@/components/ShineBorder";
+import { I18nKey, i18nAtom, useAtomValue } from "@/i18n";
 
 type LoginProps = {
   onLoginSuccess: (token: string) => void;
@@ -35,6 +36,7 @@ const errorMap: Record<string, { field: string; message: string }> = {
   },
 };
 export default function Login({ onLoginSuccess, onClose }: LoginProps) {
+  const i18n = useAtomValue(i18nAtom);
   const [type, setType] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -255,8 +257,8 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
         <Icon icon="solar:close-circle-broken" width={24} />
       </Button>
       <CardHeader className="flex flex-col gap-2">
-        <p className="text-2xl font-bold">Login</p>
-        <p className="text-sm text-gray-500">Enter your credentials to access your account</p>
+        <p className="text-2xl font-bold">{i18n[type === 'login' ? I18nKey.login : I18nKey.register]}</p>
+        <p className="text-sm text-gray-500">{i18n[type === 'login' ? I18nKey.loginDesc : I18nKey.registerDesc]}</p>
       </CardHeader>
       <CardBody className="flex flex-col gap-4">
         {
@@ -264,8 +266,8 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
             <Form>
               <Input
                 autoComplete="username"
-                label="用户名"
-                placeholder="请输入用户名"
+                label={i18n[I18nKey.username]}
+                placeholder={i18n[I18nKey.usernamePlaceholder]}
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value);
@@ -277,10 +279,10 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
               />
               <Input
                 autoComplete="password"
-                label="密码"
+                label={i18n[I18nKey.password]}
                 type="password"
                 name="password"
-                placeholder="请输入密码"
+                placeholder={i18n[I18nKey.passwordPlaceholder]}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -296,7 +298,7 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
                 }}
               />
               <span className="text-sm text-gray-500">
-                没有账号？<Button isIconOnly variant="light" onPress={() => onChangeCardType('register')} className="text-blue-500">注册</Button>
+                {i18n[I18nKey.noAccountTip]}<Button variant="light" onPress={() => onChangeCardType('register')} className="text-blue-500">{i18n[I18nKey.register]}</Button>
               </span>
             </Form>
           )
@@ -306,8 +308,8 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
             <Form>
               <Input
                 autoComplete="new-username"
-                label="用户名"
-                placeholder="请输入用户名"
+                label={i18n[I18nKey.username]}
+                placeholder={i18n[I18nKey.usernamePlaceholder]}
                 value={username}
                 onChange={(e) => {
                   setUsername(e.target.value);
@@ -319,9 +321,9 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
               />
               <Input
                 autoComplete="new-password"
-                label="密码"
+                label={i18n[I18nKey.password]}
                 type="password"
-                placeholder="请输入密码"
+                placeholder={i18n[I18nKey.passwordPlaceholder]}
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -334,9 +336,9 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
               />
               <Input
                 autoComplete="new-password"
-                label="确认密码"
+                label={i18n[I18nKey.confirmPassword]}
                 type="password"
-                placeholder="请输入密码"
+                placeholder={i18n[I18nKey.confirmPasswordPlaceholder]}
                 value={confirmPassword}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
@@ -352,7 +354,7 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
                 }}
               />
               <span className="text-sm text-gray-500">
-                已有账号？<Button isIconOnly variant="light" onPress={() => onChangeCardType('login')} className="text-blue-500">登录</Button>
+                {i18n[I18nKey.hasAccountTip]}<Button variant="light" onPress={() => onChangeCardType('login')} className="text-blue-500">{i18n[I18nKey.login]}</Button>
               </span>
             </Form>
           )
@@ -372,7 +374,7 @@ export default function Login({ onLoginSuccess, onClose }: LoginProps) {
           }}
           isLoading={isLoading}>
           {
-            type === 'login' ? 'Login' : 'Register'
+            type === 'login' ? i18n[I18nKey.login] : i18n[I18nKey.register]
           }
         </Button>
       </CardFooter>

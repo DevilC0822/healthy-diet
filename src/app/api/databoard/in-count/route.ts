@@ -27,7 +27,6 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate') || '';
     const inType = searchParams.get('inType') || '';
     const inTypeKey = inTypeMap[inType];
-    console.log(startDate, endDate);
     const ingredients = await Ingredient.find({
       updatedAt: {
         $gte: dayjs(startDate).startOf('day').format('YYYY-MM-DD'),

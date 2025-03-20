@@ -25,6 +25,7 @@ import { useLoading } from '@/hooks/useLoading';
 import SparklesText from '@/components/SparklesText';
 import { myFetch } from '@/utils';
 import { models } from '@/config';
+import { i18nAtom, I18nKey, useAtomValue } from '@/i18n';
 
 const usersAtom = atom<TUsage[]>([]);
 const pageInfoAtom = atom({
@@ -35,7 +36,7 @@ const pageInfoAtom = atom({
 
 const modelOptions = [
   {
-    label: '全部',
+    label: I18nKey.optionAll,
     value: '',
   },
   ...Object.keys(models).map((model) => ({
@@ -52,6 +53,7 @@ const filterAtom = atom({
 });
 
 export default function User() {
+  const i18n = useAtomValue(i18nAtom);
   const [filter, setFilter] = useAtom(filterAtom);
   const [users, setUsers] = useAtom(usersAtom);
   const [pageInfo, setPageInfo] = useAtom(pageInfoAtom);
@@ -90,14 +92,14 @@ export default function User() {
   return (
     <>
       <CardHeader className='flex flex-col gap-2 items-start'>
-        <SparklesText text="使用记录" />
+        <SparklesText text={i18n[I18nKey.usageTitle]} />
         <div className="flex items-end gap-4 w-[80%] max-md:w-full max-md:flex-wrap mt-2">
           <div className='flex items-center gap-2 max-md:w-full'>
-            <span className='text-nowrap'>产品名称</span>
+            <span className='text-nowrap'>{i18n[I18nKey.productName]}</span>
             <Input
               color="secondary"
-              aria-label="产品名称"
-              placeholder="请输入产品名称"
+              aria-label={i18n[I18nKey.productName]}
+              placeholder={i18n[I18nKey.productNamePlaceholder]}
               className="min-w-[200px]"
               endContent={<SearchIcon className="text-default-400" width={16} />}
               size="sm"
@@ -106,11 +108,11 @@ export default function User() {
             />
           </div>
           <div className='flex items-center gap-2 max-md:w-full'>
-            <span className='text-nowrap'>识别模型</span>
+            <span className='text-nowrap'>{i18n[I18nKey.model]}</span>
             <Select
               className='w-[200px] max-md:w-full'
               color="secondary"
-              aria-label="模型"
+              aria-label={i18n[I18nKey.model]}
               size="sm"
               selectedKeys={[filter.model]}
               onChange={(e) => {
@@ -122,14 +124,14 @@ export default function User() {
             >
               {modelOptions.map((option) => (
                 <SelectItem color="secondary" key={option.value}>
-                  {option.label}
+                  {Object.keys(I18nKey).includes(option.label) ? i18n[option.label as keyof typeof I18nKey] : option.label}
                 </SelectItem>
               ))}
             </Select>
           </div>
           <div className="flex items-center gap-2 max-md:w-full">
-            <Button size="sm" color="secondary" onPress={() => onSearch()}>查询</Button>
-            <Button size="sm" color="secondary" onPress={onReset}>重置</Button>
+            <Button size="sm" color="secondary" onPress={() => onSearch()}>{i18n[I18nKey.btnSearch]}</Button>
+            <Button size="sm" color="secondary" onPress={onReset}>{i18n[I18nKey.btnReset]}</Button>
           </div>
         </div>
       </CardHeader>
@@ -138,7 +140,7 @@ export default function User() {
           rowHeight={60}
           isStriped
           className="min-w-[1200px]"
-          aria-label="用户列表"
+          aria-label={i18n[I18nKey.usageList]}
           bottomContent={
             <div className='flex justify-end mt-2'>
               <Pagination
@@ -155,12 +157,12 @@ export default function User() {
           }
         >
           <TableHeader>
-            <TableColumn width={160} key="id">ID</TableColumn>
-            <TableColumn width={300} key="productName">产品名称</TableColumn>
-            <TableColumn width={180} key="model">模型</TableColumn>
-            <TableColumn width={120} key="usage">Token使用量</TableColumn>
-            <TableColumn width={120} key="createBy">创建人</TableColumn>
-            <TableColumn width={180} key="createdAt">创建时间</TableColumn>
+            <TableColumn width={160} key="id">{i18n[I18nKey.id]}</TableColumn>
+            <TableColumn width={300} key="productName">{i18n[I18nKey.productName]}</TableColumn>
+            <TableColumn width={180} key="model">{i18n[I18nKey.model]}</TableColumn>
+            <TableColumn width={120} key="usage">{i18n[I18nKey.usage]}</TableColumn>
+            <TableColumn width={120} key="createBy">{i18n[I18nKey.createBy]}</TableColumn>
+            <TableColumn width={180} key="createdAt">{i18n[I18nKey.createdAt]}</TableColumn>
           </TableHeader>
           <TableBody>
             {users?.map((usage) => (

@@ -9,9 +9,11 @@ import { useLoading } from "@/hooks/useLoading";
 import { cn } from "@heroui/react";
 import MyTooltip from "@/components/MyTooltip";
 import SparklesText from '@/components/SparklesText';
-import { isMobileDevice } from "@/utils";
+import { isMobileDevice, replaceString } from "@/utils";
 import { userInfoAtom } from "@/store";
 import PulsatingButton from "@/components/PulsatingButton";
+import { i18nAtom, I18nKey, useAtomValue } from "@/i18n";
+import { langAtom } from "@/store";
 
 const modelNameAtom = atom(Object.keys(models)[0]);
 const resultAtom = atom<{
@@ -24,33 +26,9 @@ const resultAtom = atom<{
   }[];
 } | null>(null);
 
-const UploadComponent = ({ result = false, className }: { result?: boolean, className?: string }) => {
-  return (
-    <div className={
-      cn(
-        'relative h-80 w-full overflow-hidden rounded-lg border bg-background flex justify-center items-center',
-        result && 'hidden',
-        className,
-      )
-    }>
-      <FlickeringGrid
-        className="absolute inset-0 z-0 size-full w-full h-80"
-        squareSize={4}
-        gridGap={6}
-        color="#6B7280"
-        maxOpacity={0.5}
-        flickerChance={0.1}
-      />
-      <PulsatingButton
-        className="text-2xl font-bold"
-      >
-        上传
-      </PulsatingButton>
-    </div>
-  );
-};
-
 export default function Inbound() {
+  const i18n = useAtomValue(i18nAtom);
+  const lang = useAtomValue(langAtom);
   const [modelName, setModelName] = useAtom(modelNameAtom);
   const [result, setResult] = useAtom(resultAtom);
   const { startLoading, stopLoading } = useLoading();
@@ -66,12 +44,13 @@ export default function Inbound() {
       method: 'POST',
       headers: {
         'CreateBy': userInfo?.username ?? '',
+        'Lang': lang,
       },
       body: formData,
     }).then(res => res.json()).then(data => {
       if (!data.success) {
         addToast({
-          title: '识别失败',
+          title: i18n[I18nKey.recognizeFail],
           description: data.message,
           color: 'danger',
         });
@@ -107,8 +86,8 @@ export default function Inbound() {
         }
       } catch {
         addToast({
-          title: '选择图片失败',
-          description: '请重试或选择其他图片',
+          title: i18n[I18nKey.selectImageFail],
+          description: i18n[I18nKey.selectImageFailTip],
           color: 'danger',
         });
       } finally {
@@ -134,11 +113,11 @@ export default function Inbound() {
   return (
     <>
       <CardHeader className='flex flex-col gap-2 items-start'>
-        <SparklesText text="配料识别" />
+        <SparklesText text={i18n[I18nKey.recognizeTitle]} />
         <div className="w-full flex flex-col gap-2 items-start mt-2">
           <div className="flex items-center gap-2">
             <p className="text-xl font-bold tracking-tighter flex items-center max-md:text-base">
-              <span className="max-md:text-sm">模型：</span><AuroraText>{models[modelName].label}</AuroraText>
+              <span className="max-md:text-sm">{i18n[I18nKey.model]}：</span><AuroraText>{models[modelName].label}</AuroraText>
             </p>
             <Dropdown trigger="press" placement="bottom" backdrop="blur">
               <DropdownTrigger>
@@ -149,7 +128,7 @@ export default function Inbound() {
                   }}
                   variant="shadow"
                 >
-                  更换模型
+                  {i18n[I18nKey.changeModel]}
                 </Chip>
               </DropdownTrigger>
               <DropdownMenu
@@ -171,26 +150,48 @@ export default function Inbound() {
             </Dropdown>
           </div>
           <span className="text-sm text-gray-500">
-            {models[modelName].description}
+            {lang === 'zh_cn' ? models[modelName].description : models[modelName].descriptionEn}
           </span>
         </div>
         {/* 上传说明 */}
-        <Alert color="primary" title="上传说明" description={
-          `支持${models[modelName].limit.type.join('、')}格式，大小不超过${models[modelName].limit.size / 1024 / 1024}MB`
+        <Alert color="primary" title={i18n[I18nKey.uploadDescTitle]} description={
+          `${replaceString(i18n[I18nKey.uploadDescTip], {
+            type: models[modelName].limit.type.join('、'),
+            size: (models[modelName].limit.size / 1024 / 1024).toString(),
+          })}`
         } />
       </CardHeader>
       <CardBody className='overflow-x-scroll'>
         <div className="cursor-pointer" onClick={onSelectImage}>
-          <UploadComponent result={!!result} className="w-full" />
+          <div className={
+            cn(
+              'relative h-80 w-full overflow-hidden rounded-lg border bg-background flex justify-center items-center',
+              result && 'hidden',
+            )
+          }>
+            <FlickeringGrid
+              className="absolute inset-0 z-0 size-full w-full h-80"
+              squareSize={4}
+              gridGap={6}
+              color="#6B7280"
+              maxOpacity={0.5}
+              flickerChance={0.1}
+            />
+            <PulsatingButton
+              className="text-2xl font-bold"
+            >
+              {i18n[I18nKey.btnUpload]}
+            </PulsatingButton>
+          </div>
         </div>
         {result && (
           <div className="mt-4">
             <div className="flex items-end gap-2 justify-between">
               <h1 className="text-4xl max-md:text-xl font-bold tracking-tighter">
-                商品名称：<AuroraText>{result.productName}</AuroraText>
+                {i18n[I18nKey.productName]}：<AuroraText>{result.productName}</AuroraText>
               </h1>
               <Button color="secondary" size="sm" onPress={onReset}>
-                重新上传
+                {i18n[I18nKey.btnReUpload]}
               </Button>
             </div>
             <div className="flex gap-2 flex-wrap mt-6">

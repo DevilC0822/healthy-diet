@@ -3,17 +3,18 @@
 import React, { type SVGProps, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Button, Spacer, useDisclosure, Tooltip, Card, addToast, Modal, ModalContent } from "@heroui/react";
+import { Button, Spacer, useDisclosure, Tooltip, Card, addToast, Modal, ModalContent, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useMediaQuery } from "usehooks-ts";
 import { cn } from "@heroui/react";
 import SidebarDrawer from "./SidebarDrawer";
 import { useTheme } from "next-themes";
 import { useLoading } from '@/hooks/useLoading';
-import { isLoginAtom, dietTokenAtom, userInfoAtom } from "@/store";
+import { isLoginAtom, dietTokenAtom, userInfoAtom, langAtom } from "@/store";
 import { useAtom } from "jotai";
 import Login from "./Login";
-
+import { langsMap, I18nKey, i18nAtom, useAtomValue } from "@/i18n";
+// import { roleOptions } from "@/config";
 
 const Sidebar = dynamic(() => import('./Sidebar'), { ssr: false });
 
@@ -64,8 +65,10 @@ export default function Layout({ children }: LayoutProps) {
   const [isLogin] = useAtom(isLoginAtom);
   const [, setDietToken] = useAtom(dietTokenAtom);
   const [userInfo] = useAtom(userInfoAtom);
+  const [lang, setLang] = useAtom(langAtom);
+  const i18n = useAtomValue(i18nAtom);
   const [mounted, setMounted] = useState(false);
-  
+
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const onToggle = React.useCallback(() => {
@@ -137,13 +140,16 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground">
               <AcmeIcon className="text-background" />
             </div>
-            <span
-              className={cn("w-full text-small font-bold uppercase opacity-100", {
-                "w-0 opacity-0": isCollapsed,
-              })}
-            >
-              Acme
-            </span>
+            <div className={cn("w-full flex items-end", {
+              "w-0 opacity-0": isCollapsed,
+            })}>
+              <span
+                className='text-lg font-bold uppercase opacity-100'
+              >
+                {i18n[I18nKey.appName]}
+              </span>
+              {/* <span className="ml-2 text-sm">{i18n[roleOptions.find((option) => option.value === userInfo?.role)?.label as keyof typeof I18nKey]}</span> */}
+            </div>
             <div className={cn("flex-end flex", { hidden: isCollapsed })}>
               <Icon
                 className="cursor-pointer dark:text-primary-foreground/60 [&>g]:stroke-[1px] max-md:hidden"
@@ -162,7 +168,10 @@ export default function Layout({ children }: LayoutProps) {
               base: "px-3 rounded-large data-[selected=true]:!bg-foreground",
               title: "group-data-[selected=true]:text-default-50",
             }}
-            items={userInfo?.menu ?? []}
+            items={userInfo?.menu.map((item) => ({
+              ...item,
+              title: i18n[item.title as keyof typeof I18nKey],
+            })) ?? []}
             onSelect={(key) => {
               router.push(key as string);
             }}
@@ -191,7 +200,7 @@ export default function Layout({ children }: LayoutProps) {
                 />
               </Button>
             )}
-            <Tooltip content={isLogin ? 'Log Out' : 'Login'} isDisabled={!isCollapsed} placement="right">
+            <Tooltip content={isLogin ? `${i18n[I18nKey.logout]}` : `${i18n[I18nKey.login]}`} isDisabled={!isCollapsed} placement="right">
               <Button
                 fullWidth
                 className={cn(
@@ -209,7 +218,58 @@ export default function Layout({ children }: LayoutProps) {
                   icon={isLogin ? "solar:ghost-smile-broken" : "solar:user-circle-broken"}
                   width={24}
                 />
-                <span className={cn({ hidden: isCollapsed })}>{isLogin ? 'Log Out' : 'Login'}</span>
+                <span className={cn({ hidden: isCollapsed })}>{isLogin ? `${i18n[I18nKey.logout]}` : `${i18n[I18nKey.login]}`}</span>
+              </Button>
+            </Tooltip>
+            {/* 中英文切换 */}
+            <Dropdown trigger="press" placement="bottom" backdrop="blur">
+              <DropdownTrigger>
+                <Button
+                  fullWidth
+                  className={cn(
+                    "justify-start truncate text-default-600 data-[hover=true]:text-foreground",
+                    {
+                      "justify-center": isCollapsed,
+                    },
+                  )}
+                  isIconOnly={isCollapsed}
+                  variant="light"
+                >
+                  <Icon icon="fa6-solid:language" width={24} />
+                  <span className={cn({ hidden: isCollapsed })}>{langsMap[lang].label}</span>
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                {
+                  Object.entries(langsMap).map(([key, value]) => (
+                    <DropdownItem key={key} onPress={() => setLang(key)}>
+                      <div className="flex items-center gap-2">
+                        <Icon icon={value.icon} width={24} />
+                        <span>{value.label}</span>
+                      </div>
+                    </DropdownItem>
+                  ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Tooltip content={theme === "dark" ? `${i18n[I18nKey.light]}` : `${i18n[I18nKey.dark]}`} isDisabled={!isCollapsed} placement="right">
+              <Button
+                fullWidth
+                className={cn(
+                  "justify-start truncate text-default-600 data-[hover=true]:text-foreground",
+                  {
+                    "justify-center": isCollapsed,
+                  },
+                )}
+                isIconOnly={isCollapsed}
+                variant="light"
+                onPress={toggleTheme}
+              >
+                <Icon
+                  className="text-default-500"
+                  icon={theme === "dark" ? "solar:sun-line-duotone" : "solar:moon-line-duotone"}
+                  width={24}
+                />
+                <span className={cn({ hidden: isCollapsed })}>{theme === "dark" ? `${i18n[I18nKey.light]}` : `${i18n[I18nKey.dark]}`}</span>
               </Button>
             </Tooltip>
             {/* github */}
@@ -232,27 +292,6 @@ export default function Layout({ children }: LayoutProps) {
                   width={24}
                 />
                 <span className={cn({ hidden: isCollapsed })}>GitHub</span>
-              </Button>
-            </Tooltip>
-            <Tooltip content={theme === "dark" ? "Light" : "Dark"} isDisabled={!isCollapsed} placement="right">
-              <Button
-                fullWidth
-                className={cn(
-                  "justify-start truncate text-default-600 data-[hover=true]:text-foreground",
-                  {
-                    "justify-center": isCollapsed,
-                  },
-                )}
-                isIconOnly={isCollapsed}
-                variant="light"
-                onPress={toggleTheme}
-              >
-                <Icon
-                  className="text-default-500"
-                  icon={theme === "dark" ? "solar:sun-line-duotone" : "solar:moon-line-duotone"}
-                  width={24}
-                />
-                <span className={cn({ hidden: isCollapsed })}>{theme === "dark" ? "Light" : "Dark"}</span>
               </Button>
             </Tooltip>
           </div>

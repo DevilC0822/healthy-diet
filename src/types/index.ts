@@ -1,3 +1,5 @@
+import { I18nKey } from '@/i18n';
+
 export type InType = '0' | '1';
 
 export const InTypeMap = {
@@ -30,7 +32,7 @@ export type User = {
 export type UserList = User[];
 
 export type Menu = {
-  title: string;
+  title: I18nKey;
   key: string;
   icon: string;
   permission: string[];

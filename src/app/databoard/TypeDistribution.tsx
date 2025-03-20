@@ -6,18 +6,20 @@ import {
   CardBody,
 } from '@heroui/react';
 import * as echarts from 'echarts';
+import { i18nAtom, I18nKey, useAtomValue } from '@/i18n';
 
 const chart: {
   [key: string]: echarts.ECharts;
 } = {};
 
-const chartNameType = {
-  '0': '配料类型分布 - 次数',
-  '1': '配料类型分布 - 数量',
+const chartNameType: { [key: string]: I18nKey } = {
+  '0': I18nKey.typeDistributionTimes,
+  '1': I18nKey.typeDistributionCount,
 };
 
 export default function IngredientInProportion({ type }: { type: '0' | '1' }) {
   const chartRef = useRef<HTMLDivElement>(null);
+  const i18n = useAtomValue(i18nAtom);
   const [chartData, setChartData] = useState<{
     name: string;
     value: number;
@@ -86,7 +88,7 @@ export default function IngredientInProportion({ type }: { type: '0' | '1' }) {
   return (
     <Card>
       <CardHeader className='flex flex-col justify-between items-startDate'>
-        <p className='text-2xl font-bold'>{chartNameType[type]}</p>
+        <p className='text-2xl font-bold'>{i18n[chartNameType[type]]}</p>
       </CardHeader >
       <CardBody className='flex justify-center items-center'>
         <div ref={chartRef} className='w-96 h-72 max-md:w-64' />

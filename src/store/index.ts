@@ -2,6 +2,7 @@ import { createStore, atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import type { Menu } from '@/types';
 import { menus } from '@/config/menu';
+import { getTranslation } from '@/i18n';
 
 type UserInfo = {
   username: string;
@@ -63,6 +64,13 @@ const isLoginAtom = atom(async (get) => {
   }
 });
 
+const langAtom = atomWithStorage('lang', 'zh_cn');
+
+const i18nAtom = atom((get) => {
+  const lang = get(langAtom);
+  return getTranslation(lang);
+});
+
 export default myStore;
 
-export { isLoginAtom, dietTokenAtom, userInfoAtom };
+export { isLoginAtom, dietTokenAtom, userInfoAtom, langAtom, i18nAtom };
