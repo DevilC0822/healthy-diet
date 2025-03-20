@@ -121,7 +121,11 @@ export async function POST(request: NextRequest) {
     if (!isJson(response)) {
       return ErrorResponse('返回格式错误，请重新上传');
     }
-    const result = JSON.parse(response!);
+    let result = JSON.parse(response!);
+    // 针对于某些模型返回的并不是 JSON 对象而是一个数组
+    if (Array.isArray(result)) {
+      result = result[0];
+    }
     if (!result.isIncludeIngredientList) {
       return ErrorResponse('图片中不包含配料表，如果确定图片中包含配料表，请切换模型重新上传');
     }

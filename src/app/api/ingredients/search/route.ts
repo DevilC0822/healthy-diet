@@ -23,7 +23,7 @@ const getPrompt = (lang: string, name: string) => {
       You are a professional nutritionist. Users should provide the names of food ingredients. Based on the food ingredient names provided by the user, please provide the corresponding food ingredient name, detailed description, type, and whether it is harmful to the human body.
       first indicates is ${name}, Please return in Chinese using the string type and use the following JSON format to return the information:
       {
-        isIngredient: boolean,
+        isIngredient: boolean, // Return true if it can be used as a food ingredient, otherwise return false.
         name: string,
         description: string,
         type: string,
@@ -35,7 +35,7 @@ const getPrompt = (lang: string, name: string) => {
       You are a professional nutritionist. Users should provide the names of food ingredients. Based on the food ingredient names provided by the user, please provide the corresponding food ingredient name, detailed description, type, and whether it is harmful to the human body.
       first indicates is ${name}, Please use the following JSON format to return the information:
       {
-        isIngredient: boolean,
+        isIngredient: boolean, // Return true if it can be used as a food ingredient, otherwise return false.
         name: string,
         description: string,
         type: string,
@@ -73,7 +73,11 @@ export async function POST(request: NextRequest) {
     if (!isJson(response)) {
       return ErrorResponse('返回格式错误，请重新查询');
     }
-    const result = JSON.parse(response!);
+    let result = JSON.parse(response!);
+    // 针对于某些模型返回的并不是 JSON 对象而是一个数组
+    if (Array.isArray(result)) {
+      result = result[0];
+    }
     if (!result.isIngredient) {
       return ErrorResponse(`${name}不是食品配料,如果你确定它是食品配料,请切换模型重新查询`);
     }
@@ -107,7 +111,7 @@ export async function POST(request: NextRequest) {
         name: result.name,
         description: result.description,
         count: 1,
-        inType: '2',
+        inType: '0',
         inSourceModel: modelLabel,
         createdAt: currentTime,
         updatedAt: currentTime,

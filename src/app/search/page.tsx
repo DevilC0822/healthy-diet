@@ -25,6 +25,14 @@ export default function SearchIngredient() {
   const [userInfo] = useAtom(userInfoAtom);
 
   const onSearch = () => {
+    if (name.length === 0) {
+      addToast({
+        title: '请输入配料名称',
+        description: '请输入配料名称',
+        color: 'danger',
+      });
+      return;
+    }
     startLoading();
     fetch('/api/ingredients/search', {
       method: 'POST',
@@ -101,6 +109,12 @@ export default function SearchIngredient() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             isClearable
+            onClear={() => setName('')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onSearch();
+              }
+            }}
           />
           <Button onPress={onSearch}>搜索</Button>
         </div>
