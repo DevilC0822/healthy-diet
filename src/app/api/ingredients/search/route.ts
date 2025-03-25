@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
   return Execution(async () => {
     const { name, model, modelLabel } = await request.json();
     const lang = request.headers.get('lang') ?? 'zh_cn';
-    const createBy = request.headers.get('CreateBy') ?? '匿名用户';
+    const createBy = request.headers.get('CreateBy') || '匿名用户';
     const service = models[model].service;
     if (!service) {
       return ErrorResponse('模型不存在');
